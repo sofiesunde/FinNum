@@ -10,10 +10,10 @@ Created on Wed Jul 11 09:41:57 2018
 # code_url = "https://api.stocktwits.com/api/2/oauth/authorize?client_id=" + consumer_key + "&response_type=code&redirect_uri=" + redirect_url + "&scope=read,watch_lists,publish_messages,publish_watch_lists,direct_messages,follow_users,follow_stocks"
 
 
-consumer_key = "f46a26396625a4df"
-consumer_secret = "d6de19cb461f22958687d5916bf86b0bd3a862ae"
+consumer_key = "ca2b8577e6887bab"
+consumer_secret = "2bb0e0475d81eb2c8b99ce9f124545e2da017889"
 redirect_url = "http://www.google.com"
-code = "be0ac5fb2056fdcf7b457fd264a11030da5f939e"
+code = "d0049f3ace396fea1c56dd88d08e086c89d0c822"
 
 token_url = "https://api.stocktwits.com/api/2/oauth/token?client_id=" + consumer_key + "&client_secret=" + consumer_secret + "&code=" + code + "&grant_type=authorization_code&redirect_uri=" + redirect_url
 
@@ -24,7 +24,7 @@ import requests
 token_info = requests.post(token_url)
 token = json.loads(token_info.content.decode("utf8"))["access_token"]
 
-for FinNum in ["FinNum_training", "FinNum_dev", "FinNum_test"]:
+for FinNum in ["datasets/FinNum_training.json", "datasets/FinNum_dev.json", "datasets/FinNum_test.json"]:
     with open(FinNum + ".json") as f:
         data = json.load(f)
 
