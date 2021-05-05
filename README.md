@@ -14,6 +14,11 @@ To run the given rebuild program, follow the _README of rebuild dataset_. The _H
 pip install requests 
 ```
 
+The training set contains 3949 instances. 
+The development test set contains 449 instances. 
+The test set contains 763 instances. 
+
+
 ## Configuration
 
 ```python
