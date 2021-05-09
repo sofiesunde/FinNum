@@ -25,8 +25,8 @@ class RandomForestClassifier():
 # Ensamble Classifier of SVM and Random Forest Classifiers
 class EnsembleClassifier():
     def __init__(self):
-        svm = make_pipeline(StandardScaler(), SVC())
+        svm = make_pipeline(StandardScaler(), OneVsRestClassifier(SVC(), n_jobs=7))
         rf = RandomForestClassifier()
 
         self.votingClassifier = VotingClassifier(
-            classifiers = [('Support Vector Machine', svm), ('Random Forest', rf)], voting='hard')
+            classifiers = [('Support Vector Machine', svm), ('Random Forest', rf)], voting='hard', n_jobs=7)
