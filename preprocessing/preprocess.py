@@ -1,4 +1,5 @@
-# code to process data
+# Preprocess data, process features
+# Sofie Sunde - Spring 2021
 
 from nltk.corpus import stopwords
 import re
@@ -33,15 +34,14 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 #x = re.findall(r"\$[^ ]+", y)
 
 # TF-IDF
-#def tfIdf(dataframe):
+#def tfidf(dataframe, training):
 
 
 # Feature Engineering
-# df = dataframe
-def featureEngineering(dataframe):
+def featureEngineering(dataframe, training):
     # preprocess tweet
     dataframe['tweet'] = dataframe['tweet'].apply(lambda tweet: preProcess(tweet))
+    #tfidfDataframe = tfidif(dataframe, training)
+    #featuresDataframe = textual(tfidfDataframe)
+    #return featuresDataframe
     return dataframe
-    #df_tfidf = tfidf_features(df, is_training)
-    #df_features = textual_features(df_tfidf)
-    #return df_features
