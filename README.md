@@ -8,7 +8,6 @@ To understand the Numeral Taxonomy used in the task and the background for the p
 ## Datasets
 
 The datasets used in this project can be accessed at [NTCIR-14 FinNum: Data](https://sites.google.com/nlg.csie.ntu.edu.tw/finnum/data) with the Stocktwits developer API.
-
 To run the given rebuild program, follow the _README of rebuild dataset_. The _HTTP library Requests_ can be installed with [pip](https://pypi.org/project/pip/):
 
 ```python
@@ -16,19 +15,17 @@ pip install requests
 ```
 
 The training set contains 3949 instances. 
-
-The development set contains 449 instances. 
-
-The test set contains 763 instances. 
+\nThe development set contains 449 instances. 
+\nThe test set contains 763 instances. 
 
 The traning dataset consist of: 
-idx
-id
-target_num
-category
-subcategory 
-tweet
-Where category (and subcategory) are output of the machine learing models. 
+idx\n
+id\n
+target_num\n
+category\n
+subcategory\n
+tweet\n
+Where category (and subcategory) is the output of the machine learing models. 
 
 ## Configuration
 
