@@ -15,7 +15,7 @@ class RandomForestClassifier():
     def __init__(self):
         self.rfClassifier = RandomForestClassifier()
 
-# Ensamble Classifier with SVM and Random Forest Classifiers
+# Ensamble Classifier of SVM and Random Forest Classifiers
 class EnsembleClassifier():
     def __init__(self):
         svm = make_pipeline(StandardScaler(), SVC())
