@@ -1,6 +1,7 @@
 # Classifier models
 # Sofie Sunde - Spring 2021
 
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -14,7 +15,7 @@ from sklearn.model_selection import train_test_split
 # Support Vector Machine Classifier
 class SupportVectorMachineClassifier():
     def __init__(self):
-        self.svmClassifier = make_pipeline(StandardScaler(), SVC())
+        self.svmClassifier = make_pipeline(StandardScaler(), OneVsRestClassifier(SVC(), n_jobs=7))
 
 # Random Forest Classifier
 class RandomForestClassifier():
