@@ -24,6 +24,7 @@ def main():
         dataframe = loadDataframe(cfg['processedFilename'])
         print('processed dataframe loaded')
     else:
+        print('featureEnigineering started')
         dataframe = featureEngineering(dataframe, training=True)
         saveDataframe(dataframe, cfg['processedFilename'])
         print('processed dataframe saved')

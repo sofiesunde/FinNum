@@ -4,6 +4,7 @@
 import json
 import numpy as np
 import pandas as pd
+import pickle
 
 #def readTrainingSet():
  #   with open("/Users/sofiesunde/GitHub/FinNum/datasets/FinNum_training_rebuilded.json", "r", encoding="latin-1") as file:
@@ -18,7 +19,7 @@ def readDocument(filepath):
         document = json.load(file)
     dataframe = pd.DataFrame(document)
     dataframe.columns = ['idx', 'id', 'target_num', 'category', 'subcategory', 'tweet']
-    print(dataframe)
+    print(dataframe.head(1))
     return dataframe
 
 def readTestSet(filepath):
@@ -34,17 +35,19 @@ def readTestSet(filepath):
 def loadTweets(filepath):
     #Load + preprocessing
     #For your own sake if you're gonna run this thing, please add nrows=10000 to the read_csv function 🤦‍♂️
-    document = pd.read_json(filepath, encoding='latin-1')
+    document = pd.read_json(filepath)#, encoding='latin-1')
     return document
     #document['text'] = document['text'].apply(lambda x: x.lower())
     ##data['target'] = np.array(data['text'].apply(sentimentTweets))
 
 # inspirasjon fra kode på git
 def saveDataframe(dataframe, filename):
-    dataframe.to_json('datasets/' + filename + '.json')
+    dataframe.to_pickle('datasets/' + filename + '.txt')
+    #dataframe.to_json('datasets/' + filename + '.json')
 
 def loadDataframe(filename):
-    dataframe = pd.read_json('datasets/' + filename + '.json')
+    dataframe = pd.read_pickle('datasets/' + filename + '.txt')
+    #dataframe = pd.read_json('datasets/' + filename + '.json')
     return dataframe
 
 #print(readTrainingSet()[150])
