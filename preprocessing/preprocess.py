@@ -1,5 +1,5 @@
-# Preprocess data, process features
 # Sofie Sunde - Spring 2021
+# Preprocess data, process features
 
 from nltk.corpus import stopwords
 import re
@@ -29,7 +29,8 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 
 # Evaluate features
 
-# Find all digits in tweet
+#def textual(dataframe):
+# Find all digits in tweet -> må ta riktig target num til riktig tekstforklaring på en eller annen måte :OOO
 #y = [X: $1.19] [Y: $5.29] [Z 999/1000]
 #x = re.findall(r"\$[^ ]+", y)
 
@@ -39,9 +40,11 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 
 # Feature Engineering
 def featureEngineering(dataframe, training):
-    # preprocess tweet
+    # Preprocess tweet
     dataframe['tweet'] = dataframe['tweet'].apply(lambda tweet: preProcess(tweet))
+    # TFIDF on dataframe
     #tfidfDataframe = tfidif(dataframe, training)
+    # Textual on dataframe
     #featuresDataframe = textual(tfidfDataframe)
     #return featuresDataframe
     return dataframe

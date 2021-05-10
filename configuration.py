@@ -1,6 +1,6 @@
+# Sofie Sunde - Spring 2021
 # Configuration to simplify change
 # Inspiration from Martin Thoma (https://martin-thoma.com/configuration-files-in-python/)
-# Sofie Sunde - Spring 2021
 
 configuration = {
     'filepathTrainingSet': 'datasets/FinNum_training_rebuilded.json',
@@ -9,5 +9,6 @@ configuration = {
     'readDocumentSaveDataframe': True,
     'filename': 'DataframeTrainingSet',
     'loadPreprocessedDataframe': False,
-    'processedFilename': 'DataframePreprocessedSet'
+    'processedFilename': 'DataframePreprocessedSet',
+    'testSize': 0.33
 }

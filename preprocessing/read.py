@@ -1,5 +1,5 @@
-# Read from dataset, save and load dataframe
 # Sofie Sunde - Spring 2021
+# Read from dataset, save and load dataframe
 
 import json
 import numpy as np
@@ -17,6 +17,16 @@ def readDocument(filepath):
     with open(filepath, "r", encoding="latin-1") as file:
         document = json.load(file)
     dataframe = pd.DataFrame(document)
+    dataframe.columns = ["idx", "id", "target_num", "category", "subcategory", "tweet"]
+    print(dataframe)
+    return dataframe
+
+def readTestSet(filepath):
+    with open(filepath, "r", encoding="latin-1") as file:
+        document = json.load(file)
+    dataframe = pd.DataFrame(document)
+    dataframe.columns = ["idx", "id", "target_num", "tweet"]
+    print(dataframe)
     return dataframe
 
 # Inspirasjon fra lab 5 løsningsforslag
@@ -34,7 +44,7 @@ def saveDataframe(dataframe, filename):
     dataframe.to_json("datasets/" + filename + ".json")
 
 def loadDataframe(filename):
-    dataframe = pd.read_json("datasets/" + filename + ".pkl.")
+    dataframe = pd.read_json("datasets/" + filename + ".json")
     return dataframe
 
 

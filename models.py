@@ -1,5 +1,5 @@
-# Classifier models
 # Sofie Sunde - Spring 2021
+# Classifier models
 
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
