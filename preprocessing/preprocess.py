@@ -3,6 +3,7 @@
 
 from nltk.corpus import stopwords
 import re
+import numpy as np
 
 # Remove stopwords (inspired by NLTK, Chapter 4.1 - Wordlist Corpora)
 def removeStopwords(document):
@@ -12,15 +13,16 @@ def removeStopwords(document):
     wordDocument = ' '.join(wordDocument)
     return wordDocument
 
+# Normalization
 def preProcess(document):
     preProcessed = document.lower()
     preProcessed = preProcessed.replace('\n', ' ')
     #preProcessed = removeStopwords(preProcessed)
     # substitute https into URL, @ into UserReply
-    preProcessed = re.sub('https([^\s]+)', "<URL>", preProcessed)
-    preProcessed = re.sub('@([^\s]+)', "<UserReply>", preProcessed)
+    preProcessed = re.sub('https([^\s]+)', '<URL>', preProcessed)
+    preProcessed = re.sub('@([^\s]+)', '<UserReply>', preProcessed)
     # substitute $cashtag into CashTag
-    preProcessed = re.sub('\$[A-Za-z]([^\s]+)', "<CashTag>", preProcessed)
+    preProcessed = re.sub('\$[A-Za-z]([^\s]+)', '<CashTag>', preProcessed)
     return preProcessed
 
 document = "@alexandra Hi my name is Sofie SUnde and I believe this link should be removed, https://www.google.com/?client=safari, although this $ADSD is not the same as this $123"
@@ -29,14 +31,18 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 
 # Evaluate features
 
+#Inspirasjon fra løsningsforslag lab 5
+#def categorizeTweets(dataframe):
+    #dataframe['category'] = np.array(dataframe['tweet'].apply(HVA SKAL VÆRE HER?!?!?!?!???!?!?!))
+
 #def textual(dataframe):
 # Find all digits in tweet -> må ta riktig target num til riktig tekstforklaring på en eller annen måte :OOO
 #y = [X: $1.19] [Y: $5.29] [Z 999/1000]
 #x = re.findall(r"\$[^ ]+", y)
+#ha med klassifiseringsregler her???? % osv?
 
 # TF-IDF
 #def tfidf(dataframe, training):
-
 
 # Feature Engineering
 def featureEngineering(dataframe, training):

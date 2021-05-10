@@ -14,18 +14,18 @@ import pandas as pd
     #return trainingSet
 
 def readDocument(filepath):
-    with open(filepath, "r", encoding="latin-1") as file:
+    with open(filepath, 'r', encoding='latin-1') as file:
         document = json.load(file)
     dataframe = pd.DataFrame(document)
-    dataframe.columns = ["idx", "id", "target_num", "category", "subcategory", "tweet"]
+    dataframe.columns = ['idx', 'id', 'target_num', 'category', 'subcategory', 'tweet']
     print(dataframe)
     return dataframe
 
 def readTestSet(filepath):
-    with open(filepath, "r", encoding="latin-1") as file:
+    with open(filepath, 'r', encoding='latin-1') as file:
         document = json.load(file)
     dataframe = pd.DataFrame(document)
-    dataframe.columns = ["idx", "id", "target_num", "tweet"]
+    dataframe.columns = ['idx', 'id', 'target_num', 'tweet']
     print(dataframe)
     return dataframe
 
@@ -34,19 +34,18 @@ def readTestSet(filepath):
 def loadTweets(filepath):
     #Load + preprocessing
     #For your own sake if you're gonna run this thing, please add nrows=10000 to the read_csv function 🤦‍♂️
-    document = pd.read_json(filepath, encoding="latin-1")
+    document = pd.read_json(filepath, encoding='latin-1')
     return document
     #document['text'] = document['text'].apply(lambda x: x.lower())
     ##data['target'] = np.array(data['text'].apply(sentimentTweets))
 
 # inspirasjon fra kode på git
 def saveDataframe(dataframe, filename):
-    dataframe.to_json("datasets/" + filename + ".json")
+    dataframe.to_json('datasets/' + filename + '.json')
 
 def loadDataframe(filename):
-    dataframe = pd.read_json("datasets/" + filename + ".json")
+    dataframe = pd.read_json('datasets/' + filename + '.json')
     return dataframe
-
 
 #print(readTrainingSet()[150])
 
