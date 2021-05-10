@@ -31,6 +31,7 @@ Where category (and eventually subcategory) is the output of the machine learing
 ## Configuration
 
 ```python
+pip install json
 pip install sklearn
 pip install nltk
 pip install pandas
