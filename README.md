@@ -26,7 +26,7 @@ category
 subcategory  
 tweet 
 
-Where category (and subcategory) is the output of the machine learing models. 
+Where category (and eventually subcategory) is the output of the machine learing models. 
 
 ## Configuration
 
