@@ -1,5 +1,6 @@
 # Sofie Sunde - Spring 2021
 # Classifier models
+# Code structure inspired by Karoline Bonnerud - https://github.com/karolbon/bot-or-human
 
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC

@@ -1,13 +1,15 @@
 # Sofie Sunde - Spring 2021
 # Main to read data, preprocess data and run models
+# Code structure inspired by Karoline Bonnerud - https://github.com/karolbon/bot-or-human
 
 from configuration import configuration as cfg
 from preprocessing.read import readDocument, saveDataframe, loadDataframe, readTestSet
-from preprocessing.preprocess import featureEngineering
+from preprocessing.preprocess import featureEngineering, categoryToNum
 from models import SupportVectorMachineClassifier, RandomForestClassifier, EnsembleClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from datetime import datetime
+import time
 
 def main():
     # Read and save or load dataframe
@@ -30,51 +32,23 @@ def main():
         print('processed dataframe saved')
 
     print(dataframe)
-    # du burde fjerne subcategories fra datasettet
-    # Defining categories: DETTE FUNGERER IKKE SOM DET SKAL:)
-    # må på en eller annen måte også si at dersom det er to target values vil de ha en tilhørende kategori
-
-    #positives = data['label'][data.label == 0]
-    #negatives = data['label'][data.label == 1]
-    #monetary = dataframe['category'][dataframe.items() == 'Monetary']
-    #monetary = dataframe.items('category', 'Monetary')
-    #print(dataframe.loc())
-
-    #print(len(monetary))
-    #percentage =
-
-    for category in dataframe.columns:
-        if category == 'Monetary':
-            Y = 1
-        elif category == 'Percentage':
-            Y = 2
-        elif category == 'Option':
-            Y = 3
-        elif category == 'Indicator':
-            Y = 4
-        elif category == 'Temporal':
-            Y = 5
-        elif category == 'Quantity':
-            Y = 6
-        elif category == 'Product Number':
-            Y = 7
-        else:
-            Y = 0
-            print('no matching category')
+    print(dataframe.head(10))
+    print(dataframe.columns)
+    Y = dataframe['category'] = dataframe['category'].apply(categoryToNum)
     print(Y)
-    #Y = dataframe.where()
-    dataframe.drop(columns=['subcategory'])
-    X = dataframe.columns.where(category='tweet')
-
+    print(dataframe.head(10))
+    # X er både target num og tweet !!!!!
+    X = dataframe['target_num'] in dataframe['tweet']
+    print(X)
     XTrain, XTest, YTrain, YTest = train_test_split(
         X, Y, test_size=cfg['testSize'], random_state=42)
 
     # Training
-    print('start training SVM: ' + str(datetime.now()))
+    print('start training SVM: ' + str(time.ctime()))
     svmClassifier = SupportVectorMachineClassifier()
     svmClassifier.svmClassifier.fit(XTrain, YTrain)
 
-    print('start training RF: ' + str(datetime.now()))
+    print('start training RF: ' + str(time.ctime()))
     rfClassifier = RandomForestClassifier()
     rfClassifier.rfClassifier.fit(XTrain, YTrain)
 
@@ -97,3 +71,4 @@ def main():
     return dataframe
 
 print(main())
+

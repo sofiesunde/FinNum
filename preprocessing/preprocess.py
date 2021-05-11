@@ -1,5 +1,6 @@
 # Sofie Sunde - Spring 2021
 # Preprocess data, process features
+# Code structure inspired by Karoline Bonnerud - https://github.com/karolbon/bot-or-human
 
 from nltk.corpus import stopwords
 import re
@@ -25,11 +26,15 @@ def preProcess(document):
     preProcessed = document.lower()
     preProcessed = preProcessed.replace('\n', ' ')
     #preProcessed = removeStopwords(preProcessed)
-    # substitute https into URL, @ into UserReply
+    # substitute https into URL, @ into UserReply, and removes them
     preProcessed = re.sub('https([^\s]+)', '<URL>', preProcessed)
+    preProcessed = re.sub('<URL>', '', preProcessed)
     preProcessed = re.sub('@([^\s]+)', '<UserReply>', preProcessed)
-    # substitute $cashtag into CashTag
+    preProcessed = re.sub('<UserReply>', '', preProcessed)
+    # substitute $cashtag into CashTag, and removes it
     preProcessed = re.sub('\$[A-Za-z]([^\s]+)', '<CashTag>', preProcessed)
+    preProcessed = re.sub('<CashTag>', '', preProcessed)
+
     return preProcessed
 
 document = "@alexandra Hi my name is Sofie SUnde and I believe this link should be removed, https://www.google.com/?client=safari, although this $ADSD is not the same as this $123"
@@ -37,6 +42,37 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 #print(preProcess(document))
 
 # Evaluate features
+# tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier
+def categoryToNum(category):
+    print(category)
+    categories = []
+    for label in category:
+        #print(label)
+        if label == 'Monetary':
+            categories.append(1)
+            #return 1
+        elif label == 'Percentage':
+            categories.append(2)
+            #return 2
+        elif label == 'Option':
+            categories.append(3)
+            #return 3
+        elif label == 'Indicator':
+            categories.append(4)
+            #return 4
+        elif label == 'Temporal':
+            categories.append(5)
+            #return 5
+        elif label == 'Quantity':
+            categories.append(6)
+            #return 6
+        elif label == 'Product Number':
+            categories.append(7)
+            #return 7
+        else:
+            categories.append(0)
+            #return 0
+    return categories
 
 #CountVectorizer???????????
 
@@ -52,6 +88,8 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 
 # må man her på en eller annen måte også si at det er 7 kategorier?
 # en tfidf for hver kategori?????? også når man kjører den så putter man inn kategory???
+# hvor skal target_num inn?????
+
 # TF-IDF
 # min_df can be adjusted, 1 = standard
 # stop_words kan fjernes
@@ -61,7 +99,7 @@ def tfidf(dataframe, training):
         print('tfidf started')
         tfidf = TfidfVectorizer(stop_words='english', min_df=0.1, ngram_range=(1,3))
         X = tfidf.fit_transform(dataframe['tweet'])
-        print(X)
+        print(tfidf.get_feature_names())
         pickle.dump(tfidf, open('datasets/tfidf.txt', 'wb'))
         # tfidfvectorizer object unable to serialize, json file unattainable
         #tfidfJson = json.dumps(tfidf)

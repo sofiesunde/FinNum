@@ -1,5 +1,6 @@
 # Sofie Sunde - Spring 2021
 # Read from dataset, save and load dataframe
+# Code structure inspired by Karoline Bonnerud - https://github.com/karolbon/bot-or-human
 
 import json
 import numpy as np
@@ -19,15 +20,16 @@ def readDocument(filepath):
         document = json.load(file)
     dataframe = pd.DataFrame(document)
     dataframe.columns = ['idx', 'id', 'target_num', 'category', 'subcategory', 'tweet']
-    print(dataframe.head(1))
+    # Remove subcategory from dataframe, inspiration from https://www.educative.io/edpresso/how-to-delete-a-column-in-pandas
+    dataframe.drop('subcategory', inplace=True, axis=1)
     return dataframe
 
+# spørs hvilket test set du bruker, test set fra 2020 ligger i datasets mappen
 def readTestSet(filepath):
     with open(filepath, 'r', encoding='latin-1') as file:
         document = json.load(file)
     dataframe = pd.DataFrame(document)
     dataframe.columns = ['idx', 'id', 'target_num', 'tweet']
-    print(dataframe)
     return dataframe
 
 # Inspirasjon fra lab 5 løsningsforslag
