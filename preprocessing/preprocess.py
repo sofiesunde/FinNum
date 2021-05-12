@@ -27,50 +27,88 @@ def preProcess(document):
     preProcessed = preProcessed.replace('\n', ' ')
     #preProcessed = removeStopwords(preProcessed)
     # substitute https into URL, @ into UserReply, and removes them
-    preProcessed = re.sub('https([^\s]+)', '<URL>', preProcessed)
-    preProcessed = re.sub('<URL>', '', preProcessed)
-    preProcessed = re.sub('@([^\s]+)', '<UserReply>', preProcessed)
-    preProcessed = re.sub('<UserReply>', '', preProcessed)
+    #preProcessed = re.sub('https([^\s]+)', '<URL>', preProcessed)
+    #preProcessed = re.sub('<URL>', '', preProcessed)
+    preProcessed = re.sub('https([^\s]+)', '', preProcessed)
+    #preProcessed = re.sub('@([^\s]+)', '<UserReply>', preProcessed)
+    #preProcessed = re.sub('<UserReply>', '', preProcessed)
+    preProcessed = re.sub('@([^\s]+)', '', preProcessed)
     # substitute $cashtag into CashTag, and removes it
-    preProcessed = re.sub('\$[A-Za-z]([^\s]+)', '<CashTag>', preProcessed)
-    preProcessed = re.sub('<CashTag>', '', preProcessed)
-
+    #preProcessed = re.sub('\$[A-Za-z]([^\s]+)', '<CashTag>', preProcessed)
+    #preProcessed = re.sub('<CashTag>', '', preProcessed)
+    preProcessed = re.sub('\$[A-Za-z]([^\s]+)', '', preProcessed)
     return preProcessed
 
 document = "@alexandra Hi my name is Sofie SUnde and I believe this link should be removed, https://www.google.com/?client=safari, although this $ADSD is not the same as this $123"
 
+
 #print(preProcess(document))
 
 # Evaluate features
+
+#def multipleTargetNums(target_num):
+ #   if len(target_num) > 1:
+  #      for label in target_num:
+
+
 # tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier
 def categoryToNum(category):
-    print(category)
+    #print(category)
     categories = []
     for label in category:
         #print(label)
         if label == 'Monetary':
-            categories.append(1)
-            #return 1
+            #categories.append(1)
+            return 1
         elif label == 'Percentage':
-            categories.append(2)
-            #return 2
+            #categories.append(2)
+            return 2
         elif label == 'Option':
-            categories.append(3)
-            #return 3
+            #categories.append(3)
+            return 3
         elif label == 'Indicator':
-            categories.append(4)
-            #return 4
+            #categories.append(4)
+            return 4
         elif label == 'Temporal':
-            categories.append(5)
-            #return 5
+            #categories.append(5)
+            return 5
         elif label == 'Quantity':
-            categories.append(6)
-            #return 6
+            #categories.append(6)
+            return 6
         elif label == 'Product Number':
-            categories.append(7)
+            #categories.append(7)
+            return 7
+        else:
+            #categories.append(0)
+            return 0
+    #return categories
+
+def numToCategory(category):
+    categories = []
+    for label in category:
+        if label == 1:
+            categories.append('Monetary')
+            #return 1
+        elif label == 2:
+            categories.append('Percentage')
+            #return 2
+        elif label == 3:
+            categories.append('Option')
+            #return 3
+        elif label == 4:
+            categories.append('Indicator')
+            #return 4
+        elif label == 5:
+            categories.append('Temporal')
+            #return 5
+        elif label == 6:
+            categories.append('Quantity')
+            #return 6
+        elif label == 7:
+            categories.append('Product Number')
             #return 7
         else:
-            categories.append(0)
+            categories.append('no category')
             #return 0
     return categories
 
@@ -94,22 +132,27 @@ def categoryToNum(category):
 # min_df can be adjusted, 1 = standard
 # stop_words kan fjernes
 # ngrams kan gjøres om til kun bare unigrams, som er default
+tweets = pd.DataFrame()
 def tfidf(dataframe, training):
     if training:
         print('tfidf started')
-        tfidf = TfidfVectorizer(stop_words='english', min_df=0.1, ngram_range=(1,3))
+        tfidf = TfidfVectorizer(stop_words='english', min_df=0.01, max_df=0.9,  ngram_range=(1, 3))
         X = tfidf.fit_transform(dataframe['tweet'])
-        print(tfidf.get_feature_names())
+        #dataframe._tfidf = tfidf
         pickle.dump(tfidf, open('datasets/tfidf.txt', 'wb'))
+        #pickle.dump(tfidf, open('datasets/tfidf.json', 'wb'))
         # tfidfvectorizer object unable to serialize, json file unattainable
         #tfidfJson = json.dumps(tfidf)
         #json.dump(tfidf, open('.//attributes.json', 'w'))
         #saveDataframe(tfidfJson, 'tfidf')
     else:
-        tfidf= pickle.load(open('datasets/tfidf.txt', 'wb'))
+        tfidf = pickle.load(open('datasets/tfidf.txt', 'wb'))
+        #tfidf = json.load(open('datasets/tfidf.json', 'wb'))
         #tfidf = loadDataframe('tfidf')
         X = tfidf.transform(dataframe['tweet'])
-    return dataframe
+    print(X)
+    return X
+
 
 # Feature Engineering
 def featureEngineering(dataframe, training):
@@ -120,3 +163,6 @@ def featureEngineering(dataframe, training):
     # Textual on dataframe
     #featureDataframe = categorizationFeatures(featureDataframe)
     return featureDataframe
+
+#dataframe = loadDataframe('package.json')
+#featureEngineering(dataframe, training=True)

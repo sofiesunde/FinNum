@@ -10,5 +10,6 @@ configuration = {
     'filename': 'DataframeTrainingSet',
     'loadPreprocessedDataframe': False,
     'processedFilename': 'DataframePreprocessedSet',
-    'testSize': 0.33
+    'testSize': 1
 }
+# 'filepathTrainingSet': 'datasets/package.json',

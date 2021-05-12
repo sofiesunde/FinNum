@@ -52,6 +52,13 @@ def loadDataframe(filename):
     #dataframe = pd.read_json('datasets/' + filename + '.json')
     return dataframe
 
+#tweets = [{"idx": 1302, "id": 103568095, "target_num": ["3.01"], "category": ["Monetary"], "subcategory": ["buy price"], "tweet": "$THCX.V One of the better setups. Price at $3.01"}, {"idx": 2416, "id": 103745329, "target_num": ["130.7"], "category": ["Monetary"], "subcategory": ["stop loss"], "tweet": "$TQQQ welp, no more money at 130.7."}, {"idx": 2679, "id": 105266444, "target_num": ["12"], "category": ["Temporal"], "subcategory": ["date"], "tweet": "Last chance to get in before ELD mandate $MICT $CAMP $TRMB $MIXT $VZ. Orders will be coming in for the next 12 months + $stocks $investing"}]
+#tweetsDataframe = pd.DataFrame(tweets)
+#print(tweetsDataframe)
+#tweetsDataframe = tweetsDataframe.columns = {'idx', 'id', 'target_num', 'category', 'subcategory', 'tweet'}
+#tweetsDataframe = tweetsDataframe.drop('subcategory', inplace=True, axis=1)
+#saveDataframe(tweetsDataframe, tweets)
+
 #print(readTrainingSet()[150])
 
 #print(readDocument("/Users/sofiesunde/GitHub/FinNum/datasets/FinNum_training_rebuilded.json")[150])
