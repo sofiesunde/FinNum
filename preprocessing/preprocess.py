@@ -50,7 +50,7 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
  #   if len(target_num) > 1:
   #      for label in target_num:
 
-
+# ide : lage alt som liste med 7 felter der det er 0 eller 1 på de kategoriene 
 # tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier
 def categoryToNum(category):
     #print(category)
@@ -135,7 +135,7 @@ def numToCategory(category):
 tweets = pd.DataFrame()
 def tfidf(dataframe, training):
     if training:
-        print('tfidf started')
+        print('tfidf training started')
         tfidf = TfidfVectorizer(stop_words='english', min_df=0.01, max_df=0.9,  ngram_range=(1, 3))
         X = tfidf.fit_transform(dataframe['tweet'])
         #dataframe._tfidf = tfidf
@@ -146,11 +146,11 @@ def tfidf(dataframe, training):
         #json.dump(tfidf, open('.//attributes.json', 'w'))
         #saveDataframe(tfidfJson, 'tfidf')
     else:
+        print('loading tfidf started')
         tfidf = pickle.load(open('datasets/tfidf.txt', 'wb'))
         #tfidf = json.load(open('datasets/tfidf.json', 'wb'))
         #tfidf = loadDataframe('tfidf')
         X = tfidf.transform(dataframe['tweet'])
-    print(X)
     return X
 
 
