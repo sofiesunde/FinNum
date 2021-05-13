@@ -27,17 +27,21 @@ def main():
     else:
         print('featureEngineering started')
         dataframe = featureEngineering(dataframe, training=True)
-        saveDataframe(dataframe, cfg['processedFilename'])
+        #saveDataframe(dataframe, cfg['processedFilename'])
         print('processed dataframe saved')
 
     # må på en eller annen måte presisere target num i tweeten som input tror jeg
-    X = dataframe['target_num'] #= dataframe.apply(multiple)
-    Y = dataframe['category'] = dataframe['category'].apply(categoryToNum)
+    print('her kommer dataframe')
+    print(dataframe)
+
+    X = dataframe[['target_num', 'tweet']]
+    Y = dataframe['category']
+    print("her er nye Y", Y)
 
     # X er både target num og tweet !!!!!
     # aner ikke om dette blir riktig, skal category være med?
     # skal man si noe om at første element i listen target_num = første element i category???
-    dataframe.drop(columns=['idx', 'id', 'category'])
+
 
 
     print(X)
@@ -48,7 +52,7 @@ def main():
     # Training
     print('start training SVM: ' + str(time.ctime()))
     svmClassifier = SupportVectorMachineClassifier()
-    svmClassifier.svmClassifier.fit(list(XTrain), list(YTrain))
+    svmClassifier.svmClassifier.fit(XTrain, YTrain)
 
     #enumerate as boolean??????
 
@@ -83,5 +87,7 @@ def main():
     testSet = readTestSet(cfg['filepathTestSet'])
     return dataframe
 
-print(main())
+if __name__ == '__main__':
+    main()
+
 

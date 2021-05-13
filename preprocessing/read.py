@@ -20,8 +20,9 @@ def readDocument(filepath):
         document = json.load(file)
     dataframe = pd.DataFrame(document)
     dataframe.columns = ['idx', 'id', 'target_num', 'category', 'subcategory', 'tweet']
-    # Remove subcategory from dataframe, inspiration from https://www.educative.io/edpresso/how-to-delete-a-column-in-pandas
-    dataframe.drop('subcategory', inplace=True, axis=1)
+    # Remove idx, id and subcategory from dataframe, inspiration from https://www.educative.io/edpresso/how-to-delete-a-column-in-pandas
+    dataframe.drop(['idx', 'id', 'subcategory'], inplace=True, axis=1)
+    print(dataframe)
     return dataframe
 
 # spørs hvilket test set du bruker, test set fra 2020 ligger i datasets mappen

@@ -25,7 +25,7 @@ def removeStopwords(document):
 def preProcess(document):
     preProcessed = document.lower()
     preProcessed = preProcessed.replace('\n', ' ')
-    #preProcessed = removeStopwords(preProcessed)
+    preProcessed = removeStopwords(preProcessed)
     # substitute https into URL, @ into UserReply, and removes them
     #preProcessed = re.sub('https([^\s]+)', '<URL>', preProcessed)
     #preProcessed = re.sub('<URL>', '', preProcessed)
@@ -50,38 +50,37 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
  #   if len(target_num) > 1:
   #      for label in target_num:
 
-# ide : lage alt som liste med 7 felter der det er 0 eller 1 på de kategoriene 
+# ide : lage alt som liste med 7 felter der det er 0 eller 1 på de kategoriene
 # tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier
 def categoryToNum(category):
-    #print(category)
-    categories = []
-    for label in category:
-        #print(label)
+    # One hot encode
+    n = len(category)
+    categories = np.zeros((n, 7)).tolist()
+        #categories = np.zeros(7)
+    for i, label in enumerate(category):
         if label == 'Monetary':
-            #categories.append(1)
-            return 1
+            categories[i][0] = 1
+
         elif label == 'Percentage':
-            #categories.append(2)
-            return 2
+            categories[i][1] = 1
+
         elif label == 'Option':
-            #categories.append(3)
-            return 3
+            categories[i][2] = 1
+
         elif label == 'Indicator':
-            #categories.append(4)
-            return 4
+            categories[i][3] = 1
+
         elif label == 'Temporal':
-            #categories.append(5)
-            return 5
+            categories[i][4] = 1
+
         elif label == 'Quantity':
-            #categories.append(6)
-            return 6
+            categories[i][5] = 1
+
         elif label == 'Product Number':
-            #categories.append(7)
-            return 7
-        else:
-            #categories.append(0)
-            return 0
-    #return categories
+            categories[i][6] = 1
+
+    print("Categories list: ", categories)
+    return categories
 
 def numToCategory(category):
     categories = []
@@ -135,9 +134,9 @@ def numToCategory(category):
 tweets = pd.DataFrame()
 def tfidf(dataframe, training):
     if training:
-        print('tfidf training started')
+        print('tfidf started')
         tfidf = TfidfVectorizer(stop_words='english', min_df=0.01, max_df=0.9,  ngram_range=(1, 3))
-        X = tfidf.fit_transform(dataframe['tweet'])
+        dataframe['tweet'] = tfidf.fit_transform(dataframe['tweet'])
         #dataframe._tfidf = tfidf
         pickle.dump(tfidf, open('datasets/tfidf.txt', 'wb'))
         #pickle.dump(tfidf, open('datasets/tfidf.json', 'wb'))
@@ -150,18 +149,18 @@ def tfidf(dataframe, training):
         tfidf = pickle.load(open('datasets/tfidf.txt', 'wb'))
         #tfidf = json.load(open('datasets/tfidf.json', 'wb'))
         #tfidf = loadDataframe('tfidf')
-        X = tfidf.transform(dataframe['tweet'])
-    return X
+        dataframe['tweet'] = tfidf.transform(dataframe['tweet'])
+    return dataframe
 
 
 # Feature Engineering
 def featureEngineering(dataframe, training):
     # Preprocess tweet
     dataframe['tweet'] = dataframe['tweet'].apply(lambda tweet: preProcess(tweet))
+    # Categorization on dataframe
+    dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
     # TFIDF on dataframe
     featureDataframe = tfidf(dataframe, training)
-    # Textual on dataframe
-    #featureDataframe = categorizationFeatures(featureDataframe)
     return featureDataframe
 
 #dataframe = loadDataframe('package.json')
