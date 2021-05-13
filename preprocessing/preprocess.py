@@ -56,7 +56,6 @@ def categoryToNum(category):
     # One hot encode
     n = len(category)
     categories = np.zeros((n, 7)).tolist()
-        #categories = np.zeros(7)
     for i, label in enumerate(category):
         if label == 'Monetary':
             categories[i][0] = 1
@@ -85,32 +84,62 @@ def categoryToNum(category):
 def numToCategory(category):
     categories = []
     for label in category:
-        if label == 1:
-            categories.append('Monetary')
+        if label == 'Monetary':
+            categories.append(1)
             #return 1
-        elif label == 2:
-            categories.append('Percentage')
+        elif label == 'Percentage':
+            categories.append(2)
             #return 2
-        elif label == 3:
-            categories.append('Option')
+        elif label == 'Option':
+            categories.append(3)
             #return 3
-        elif label == 4:
-            categories.append('Indicator')
+        elif label == 'Indicator':
+            categories.append(4)
             #return 4
-        elif label == 5:
-            categories.append('Temporal')
+        elif label == 'Temporal':
+            categories.append(5)
             #return 5
-        elif label == 6:
-            categories.append('Quantity')
+        elif label == 'Quantity':
+            categories.append(6)
             #return 6
-        elif label == 7:
-            categories.append('Product Number')
+        elif label == 'Product Number':
+            categories.append(7)
             #return 7
-        else:
-            categories.append('no category')
-            #return 0
+    print(categories)
     return categories
 
+def categoryToBinary(category):
+    categories = []
+    for label in category:
+        if label == 'Monetary':
+            categories.append('{:04b}'.format(1))
+            #return 1
+        elif label == 'Percentage':
+            categories.append('{:04b}'.format(2))
+            #return 2
+        elif label == 'Option':
+            categories.append('{:04b}'.format(3))
+            #return 3
+        elif label == 'Indicator':
+            categories.append('{:04b}'.format(4))
+            #return 4
+        elif label == 'Temporal':
+            categories.append('{:04b}'.format(5))
+            #return 5
+        elif label == 'Quantity':
+            categories.append('{:04b}'.format(6))
+            #return 6
+        elif label == 'Product Number':
+            categories.append('{:04b}'.format(7))
+            #return 7
+    print(categories)
+    return categories
+
+class BinFormatter(object):
+    def __init__(self, v):
+        self.v = v
+    def __repr__(self):
+        return '{:04b}'.format(self.v)
 #CountVectorizer???????????
 
 #Inspirasjon fra løsningsforslag lab 5
@@ -158,7 +187,7 @@ def featureEngineering(dataframe, training):
     # Preprocess tweet
     dataframe['tweet'] = dataframe['tweet'].apply(lambda tweet: preProcess(tweet))
     # Categorization on dataframe
-    dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
+    dataframe['category'] = dataframe['category'].apply(lambda category: categoryToBinary(category))
     # TFIDF on dataframe
     featureDataframe = tfidf(dataframe, training)
     return featureDataframe
