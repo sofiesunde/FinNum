@@ -46,16 +46,19 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 
 # Evaluate features
 
-#def multipleTargetNums(target_num):
+#def multipleTargetNums(dataframe):
  #   if len(target_num) > 1:
   #      for label in target_num:
+   #     dataframe[['targetnum1', 'targetnum2']] = dataframe['target_num'](dataframe.teams.tolist(), index=dataframe.index)
 
-# ide : lage alt som liste med 7 felter der det er 0 eller 1 på de kategoriene
-# tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier
+# ide : lage alt som liste med 7 felter der det er 0 eller 1 på de kategoriene,
+# tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier....
+
+# lister inni liste, klarer den ikke uansett om det er liste med tall eller binær eller liste inni liste, rart, fordi numToCategory er jo samme som target num?
 def categoryToNum(category):
     # One hot encode
     n = len(category)
-    categories = np.zeros((n, 7)).tolist()
+    categories = np.zeros((n, 7), dtype=int).tolist()
     for i, label in enumerate(category):
         if label == 'Monetary':
             categories[i][0] = 1
@@ -78,11 +81,14 @@ def categoryToNum(category):
         elif label == 'Product Number':
             categories[i][6] = 1
 
-    print("Categories list: ", categories)
+        #categories = map(float, categories[i])
+    print('Categories list:')
+    print(categories)
     return categories
 
 def numToCategory(category):
     categories = []
+    #map(float, categories[i].split(","))
     for label in category:
         if label == 'Monetary':
             categories.append(1)
@@ -104,6 +110,35 @@ def numToCategory(category):
             #return 6
         elif label == 'Product Number':
             categories.append(7)
+            #return 7
+    print(categories)
+    return categories
+
+# her får man ikke skilt på hvilket target num som er hvilken kategori:OO
+def categorize(category):
+    categories = [0, 0, 0, 0, 0, 0, 0]
+    #map(float, categories[i].split(","))
+    for label in category:
+        if label == 'Monetary':
+            categories[0] = 1
+            #return 1
+        elif label == 'Percentage':
+            categories[1] = 1
+            #return 2
+        elif label == 'Option':
+            categories[2] = 1
+            #return 3
+        elif label == 'Indicator':
+            categories[3] = 1
+            #return 4
+        elif label == 'Temporal':
+            categories[4] = 1
+            #return 5
+        elif label == 'Quantity':
+            categories[5] = 1
+            #return 6
+        elif label == 'Product Number':
+            categories[6] = 1
             #return 7
     print(categories)
     return categories
@@ -160,12 +195,14 @@ class BinFormatter(object):
 # min_df can be adjusted, 1 = standard
 # stop_words kan fjernes
 # ngrams kan gjøres om til kun bare unigrams, som er default
-tweets = pd.DataFrame()
-def tfidf(dataframe, training):
+
+def tfidf(dataframe, training, validation):
     if training:
         print('tfidf started')
+        print(dataframe['tweet'])
         tfidf = TfidfVectorizer(stop_words='english', min_df=0.01, max_df=0.9,  ngram_range=(1, 3))
-        dataframe['tweet'] = tfidf.fit_transform(dataframe['tweet'])
+        p = tfidf.fit_transform(dataframe['tweet'])
+        print(p)
         #dataframe._tfidf = tfidf
         pickle.dump(tfidf, open('datasets/tfidf.txt', 'wb'))
         #pickle.dump(tfidf, open('datasets/tfidf.json', 'wb'))
@@ -175,21 +212,72 @@ def tfidf(dataframe, training):
         #saveDataframe(tfidfJson, 'tfidf')
     else:
         print('loading tfidf started')
-        tfidf = pickle.load(open('datasets/tfidf.txt', 'wb'))
+        #tfidf = pickle.load(open('datasets/tfidf.txt', 'wb'))
         #tfidf = json.load(open('datasets/tfidf.json', 'wb'))
         #tfidf = loadDataframe('tfidf')
-        dataframe['tweet'] = tfidf.transform(dataframe['tweet'])
+        #dataframe['tweet'] = tfidf.transform(dataframe['tweet'])
+    return dataframe
+
+def multipleProcessing(dataframe, multiple):
+    n = len(multiple)
+    print(dataframe['index'])
+    for label in enumerate(multiple):
+        if n > 1:
+            dataframe.drop(dataframe['index'])
+
+# Get names of indexes for which column Age has value 30
+#indexNames = dfObj[ dfObj['Age'] == 30 ].index
+# Delete these row indexes from dataFrame
+#dfObj.drop(indexNames , inplace=True)
+
+def multipleProcessing1(dataframe):
+    print(dataframe)
+    nums = dataframe['target_num']
+    counter = 0
+    for i, num in nums:
+        counter += 1
+        if len(num) > 1:
+            #multiple = dataframe[num].index
+            dataframe.drop(dataframe['index'] == i)
+
+
+        #multiple = dataframe[len(num) > 1]
+        #dataframe.drop(multiple, inplace=True)
+    #for label in dataframe['target_num']:
+     #   if len(label) > 1:
+      #      dataframe.drop(dataframe['index'])
     return dataframe
 
 
+def categoryToNum(category):
+    # One hot encode
+    n = len(category)
+    categories = np.zeros((n, 7), dtype=int).tolist()
+    for i, label in enumerate(category):
+        if label == 'Monetary':
+            categories[i][0] = 1
+
+        elif label == 'Percentage':
+            categories[i][1] = 1
+
 # Feature Engineering
-def featureEngineering(dataframe, training):
+def featureEngineering(dataframe, training, validation):
+    #dataframe = multipleProcessing(dataframe)
     # Preprocess tweet
     dataframe['tweet'] = dataframe['tweet'].apply(lambda tweet: preProcess(tweet))
+    #dataframe['target_num'] = dataframe['tweet'].apply(lambda num: multipleTargetNums(num))
+    #dataframe = dataframe.drop(dataframe[len(dataframe['target_num'] > 1)].index, inplace=True)
+    #dataframe = multipleProcessing1(dataframe)
+    #dataframe['target_num'] = dataframe['target_num'].apply(lambda num: multipleProcessing(dataframe, num))
+    #dataframe['target_num'] = dataframe['target_num'].apply(lambda dataframe: multipleProcessing(dataframe, num))
+    #dataframe[['target_num', 'category']] = dataframe[['target_num', 'category']].apply(lambda num: len(num.split(',')) < 2)
+    print('dataframe with only one num in tweet')
+    print(dataframe)
+    #print(df[df['alfa'].apply(lambda x: len(x.split(',')) < 3)])
     # Categorization on dataframe
-    dataframe['category'] = dataframe['category'].apply(lambda category: categoryToBinary(category))
+    dataframe['category'] = dataframe['category'].apply(lambda category: numToCategory(category))
     # TFIDF on dataframe
-    featureDataframe = tfidf(dataframe, training)
+    featureDataframe = tfidf(dataframe, training, validation)
     return featureDataframe
 
 #dataframe = loadDataframe('package.json')

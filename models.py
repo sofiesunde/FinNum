@@ -3,6 +3,7 @@
 # Code structure inspired by Karoline Bonnerud - https://github.com/karolbon/bot-or-human
 
 from sklearn.multiclass import OneVsRestClassifier
+from sklearn.multioutput import MultiOutputClassifier
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -21,7 +22,7 @@ class SupportVectorMachineClassifier():
 # Random Forest Classifier
 class RandomForestClassifier():
     def __init__(self):
-        self.rfClassifier = RandomForestClassifier()
+        self.rfClassifier = RandomForestClassifier(random_state=1)
 
 # Ensamble Classifier of SVM and Random Forest Classifiers
 class EnsembleClassifier():
@@ -30,4 +31,4 @@ class EnsembleClassifier():
         rf = RandomForestClassifier()
 
         self.votingClassifier = VotingClassifier(
-            classifiers = [('Support Vector Machine', svm), ('Random Forest', rf)], voting='hard', n_jobs=7)
+            classifiers=[('Support Vector Machine', svm), ('Random Forest', rf)], voting='hard', n_jobs=7)

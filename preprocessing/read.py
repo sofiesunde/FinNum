@@ -20,6 +20,10 @@ def readDocument(filepath):
         document = json.load(file)
     dataframe = pd.DataFrame(document)
     dataframe.columns = ['idx', 'id', 'target_num', 'category', 'subcategory', 'tweet']
+    index = []
+    for i in range(len(dataframe)):
+        index.append(i+1)
+    dataframe.index = [index]
     # Remove idx, id and subcategory from dataframe, inspiration from https://www.educative.io/edpresso/how-to-delete-a-column-in-pandas
     dataframe.drop(['idx', 'id', 'subcategory'], inplace=True, axis=1)
     print(dataframe)
@@ -31,6 +35,7 @@ def readTestSet(filepath):
         document = json.load(file)
     dataframe = pd.DataFrame(document)
     dataframe.columns = ['idx', 'id', 'target_num', 'tweet']
+
     return dataframe
 
 # Inspirasjon fra lab 5 løsningsforslag
