@@ -5,10 +5,13 @@
 from configuration import configuration as cfg
 from preprocessing.read import readDocument, saveDataframe, loadDataframe, readTestSet
 from preprocessing.preprocess import featureEngineering, categoryToNum
-from models import SupportVectorMachineClassifier, RandomForestClassifier, EnsembleClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+#from models import SupportVectorMachineClassifier, RandomForestClassifier, EnsembleClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss, confusion_matrix, plot_confusion_matrix, precision_recall_fscore_support
 from sklearn.datasets import make_classification
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.utils import shuffle
 import numpy as np
@@ -43,8 +46,20 @@ def main():
     # skal man si noe om at første element i listen target_num = første element i category???
     # Her begynner koden din nå
     ###################################################################################################
+    import sys
+    print(sys.getrecursionlimit())
+
+    # forest = RandomForestClassifier(n_estimators=n_estimator, random_state=1)
+    # sampler = SMOTE(random_state=2)
+    # pipeline = make_pipeline(sampler, forest)
+    # multi_target_forest = MultiOutputClassifier(pipeline, n_jobs=-1)
+    # model = multi_target_forest.fit(vecs, vec_labels)
+
+    # Code found at https://github.com/scikit-learn-contrib/imbalanced-learn/issues/337
     rfClassifier = RandomForestClassifier()
-    multiRFClassifier = MultiOutputClassifier(rfClassifier, n_jobs=7)
+    # her kan du evt. prøve SMOTE istedenfor standardscaler fordi det er et ujevnt dataset, men lurer på om smote gjør det samme som reduserte accuracyen i eksempelrapport
+    pipeline = make_pipeline(StandardScaler(), rfClassifier)
+    multiRFClassifier = MultiOutputClassifier(pipeline, n_jobs=7)
     if (cfg['training']):
         # Training
         # Read training data from training set
@@ -58,7 +73,7 @@ def main():
 
         # Training model
         print('start training RF: ' + str(time.ctime()))
-        multiRFClassifier.rfClassifier.fit(XTrain, YTrain)
+        multiRFClassifier.fit(XTrain, YTrain)
         print('done training RF: ' + str(time.ctime()))
 
         # Validation
@@ -73,7 +88,7 @@ def main():
 
         # Validation of model
         print('start predicting RF: ' + str(time.ctime()))
-        rfValidated = multiRFClassifier.rfClassifier.predict(XValidate)
+        rfValidated = multiRFClassifier.predict(XValidate)
         print('done predicting RF: ' + str(time.ctime()))
         # Finding accuracy and loss for current iteration
         rfAccuracy = accuracy_score(YValidate, rfValidated)
@@ -94,7 +109,7 @@ def main():
 
         # Testing performance of model
         print('start testing RF: ' + str(time.ctime()))
-        RFClassified = multiRFClassifier.rfClassifier.predict(XTest)
+        RFClassified = multiRFClassifier.predict(XTest)
         print('done testing RF: ' + str(time.ctime()))
         # Finding accuracy and loss for current iteration
         RFAccuracy = accuracy_score(YTest, RFClassified)
@@ -106,9 +121,7 @@ def main():
         print('metrics RF: ' + RFMetrics)
         # Må du her gjøre om tilbake tall til kategori????
         class_names = ['Monetary', 'Percentage', 'Option', 'Indicator', 'Temporal', 'Quantity', 'Product Number']
-        plotRF = plot_confusion_matrix(rfClassifier.classifier,
-                                        XTest, YTest, display_labels=class_names,
-                                        cmap=plot.cm.Blues, normalize='true')
+        plotRF = plot_confusion_matrix(rfClassifier.classifier, XTest, YTest, display_labels=class_names, cmap=plot.cm.Blues, normalize='true')
         plotRF.ax_.set_title("Random Forest")
         plot.savefig('results/RF.png')
 

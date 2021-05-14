@@ -32,3 +32,10 @@ class EnsembleClassifier():
 
         self.votingClassifier = VotingClassifier(
             classifiers=[('Support Vector Machine', svm), ('Random Forest', rf)], voting='hard', n_jobs=7)
+
+        # Code found at https://github.com/scikit-learn-contrib/imbalanced-learn/issues/337
+        #forest = RandomForestClassifier(n_estimators=n_estimator, random_state=1)
+        #sampler = SMOTE(random_state=2)
+        #pipeline = make_pipeline(sampler, forest)
+        #multi_target_forest = MultiOutputClassifier(pipeline, n_jobs=-1)
+        #model = multi_target_forest.fit(vecs, vec_labels)

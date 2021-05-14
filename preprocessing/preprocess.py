@@ -170,16 +170,6 @@ def categoryToBinary(category):
     print(categories)
     return categories
 
-class BinFormatter(object):
-    def __init__(self, v):
-        self.v = v
-    def __repr__(self):
-        return '{:04b}'.format(self.v)
-#CountVectorizer???????????
-
-#Inspirasjon fra løsningsforslag lab 5
-#def categorizeTweets(dataframe):
-    #dataframe['category'] = np.array(dataframe['tweet'].apply(HVA SKAL VÆRE HER?!?!?!?!???!?!?!))
 
 #def categorizationFeatures(dataframe):
 # Find all digits in tweet -> må ta riktig target num til riktig tekstforklaring på en eller annen måte :OOO
@@ -187,9 +177,6 @@ class BinFormatter(object):
 #x = re.findall(r"\$[^ ]+", y)
 #ha med klassifiseringsregler her???? % osv?
 
-# må man her på en eller annen måte også si at det er 7 kategorier?
-# en tfidf for hver kategori?????? også når man kjører den så putter man inn kategory???
-# hvor skal target_num inn?????
 
 # TF-IDF
 # min_df can be adjusted, 1 = standard
