@@ -22,7 +22,7 @@ class SupportVectorMachineClassifier():
 # Random Forest Classifier
 class RandomForestClassifier():
     def __init__(self):
-        self.rfClassifier = RandomForestClassifier(random_state=1)
+        self.rfClassifier = RandomForestClassifier()
 
 # Ensamble Classifier of SVM and Random Forest Classifiers
 class EnsembleClassifier():

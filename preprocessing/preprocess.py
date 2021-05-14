@@ -218,6 +218,7 @@ def tfidf(dataframe, training, validation):
         #dataframe['tweet'] = tfidf.transform(dataframe['tweet'])
     return dataframe
 
+# dersom du vil jobbe med kun tweets med 1 tall
 def multipleProcessing(dataframe, multiple):
     n = len(multiple)
     print(dataframe['index'])
@@ -229,6 +230,7 @@ def multipleProcessing(dataframe, multiple):
 #indexNames = dfObj[ dfObj['Age'] == 30 ].index
 # Delete these row indexes from dataFrame
 #dfObj.drop(indexNames , inplace=True)
+
 
 def multipleProcessing1(dataframe):
     print(dataframe)
@@ -247,18 +249,6 @@ def multipleProcessing1(dataframe):
      #   if len(label) > 1:
       #      dataframe.drop(dataframe['index'])
     return dataframe
-
-
-def categoryToNum(category):
-    # One hot encode
-    n = len(category)
-    categories = np.zeros((n, 7), dtype=int).tolist()
-    for i, label in enumerate(category):
-        if label == 'Monetary':
-            categories[i][0] = 1
-
-        elif label == 'Percentage':
-            categories[i][1] = 1
 
 # Feature Engineering
 def featureEngineering(dataframe, training, validation):
