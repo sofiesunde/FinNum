@@ -44,10 +44,11 @@ def main():
     #print('her kommer dataframe')
     #print(dataframe)
     # skal man si noe om at første element i listen target_num = første element i category???
+
+
+
     # Her begynner koden din nå
     ###################################################################################################
-    import sys
-    print(sys.getrecursionlimit())
 
     # forest = RandomForestClassifier(n_estimators=n_estimator, random_state=1)
     # sampler = SMOTE(random_state=2)
@@ -57,6 +58,7 @@ def main():
 
     # Code found at https://github.com/scikit-learn-contrib/imbalanced-learn/issues/337
     rfClassifier = RandomForestClassifier()
+    # burde nok ha med class_label: weight se fremgangsmåte på https://towardsdatascience.com/why-weight-the-importance-of-training-on-balanced-datasets-f1e54688e7df
     # her kan du evt. prøve SMOTE istedenfor standardscaler fordi det er et ujevnt dataset, men lurer på om smote gjør det samme som reduserte accuracyen i eksempelrapport
     pipeline = make_pipeline(StandardScaler(), rfClassifier)
     multiRFClassifier = MultiOutputClassifier(pipeline, n_jobs=7)
@@ -64,12 +66,15 @@ def main():
         # Training
         # Read training data from training set
         trainingDataframe = readDocument(cfg['filepathTrainingSet'])
+        print(trainingDataframe)
         # Feature Engineering on dataframe
         trainingDataframe = featureEngineering(trainingDataframe, training=True, validation=False)
         # Feature Vectors
         XTrain = trainingDataframe[['target_num', 'tweet']]
+        print(XTrain)
         # Category
         YTrain = trainingDataframe['category']
+        print(YTrain)
 
         # Training model
         print('start training RF: ' + str(time.ctime()))
@@ -125,7 +130,7 @@ def main():
         plotRF.ax_.set_title("Random Forest")
         plot.savefig('results/RF.png')
 
-
+    ###################################################################################################
 
     #XTrain, XValidate, YTrain, YValidate = train_test_split(
     #    X, Y, test_size=cfg['testSize'], random_state=42)

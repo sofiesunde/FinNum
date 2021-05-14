@@ -58,7 +58,7 @@ document = "@alexandra Hi my name is Sofie SUnde and I believe this link should 
 def categoryToNum(category):
     # One hot encode
     n = len(category)
-    categories = np.zeros((n, 7), dtype=int).tolist()
+    categories = np.zeros((n, 7), dtype=int)
     for i, label in enumerate(category):
         if label == 'Monetary':
             categories[i][0] = 1
@@ -83,6 +83,7 @@ def categoryToNum(category):
 
         #categories = map(float, categories[i])
     print('Categories list:')
+
     print(categories)
     return categories
 
@@ -188,8 +189,8 @@ def tfidf(dataframe, training, validation):
         print('tfidf started')
         print(dataframe['tweet'])
         tfidf = TfidfVectorizer(stop_words='english', min_df=0.01, max_df=0.9,  ngram_range=(1, 3))
-        p = tfidf.fit_transform(dataframe['tweet'])
-        print(p)
+        dataframe['tweet'] = tfidf.fit_transform(dataframe['tweet']).toarray()
+
         #dataframe._tfidf = tfidf
         pickle.dump(tfidf, open('datasets/tfidf.txt', 'wb'))
         #pickle.dump(tfidf, open('datasets/tfidf.json', 'wb'))
@@ -252,7 +253,7 @@ def featureEngineering(dataframe, training, validation):
     print(dataframe)
     #print(df[df['alfa'].apply(lambda x: len(x.split(',')) < 3)])
     # Categorization on dataframe
-    dataframe['category'] = dataframe['category'].apply(lambda category: numToCategory(category))
+    dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
     # TFIDF on dataframe
     featureDataframe = tfidf(dataframe, training, validation)
     return featureDataframe
