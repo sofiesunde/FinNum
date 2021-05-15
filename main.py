@@ -4,7 +4,7 @@
 
 from configuration import configuration as cfg
 from preprocessing.read import readDocument, saveDataframe, loadDataframe, readTestSet
-from preprocessing.preprocess import featureEngineering, categoryToNum
+from preprocessing.preprocess import featureEngineering, categoryToNum, categoryCount
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 #from models import SupportVectorMachineClassifier, RandomForestClassifier, EnsembleClassifier
@@ -13,10 +13,12 @@ from sklearn.metrics import accuracy_score, log_loss, confusion_matrix, plot_con
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.utils import shuffle
 import numpy as np
 import matplotlib.pyplot as plot
 import time
+import pandas as pd
 
 
 
@@ -49,6 +51,18 @@ def main():
 
     # Her begynner koden din nå
     ###################################################################################################
+    #if (cfg['training']):
+        # Training
+        # Read training data from training set
+     #   trainingDataframe = readDocument(cfg['filepathTrainingSet'])
+      #  print(trainingDataframe.info())
+       # print(trainingDataframe.category.value_counts())
+        #for label in trainingDataframe[['category']:
+         #   if label == 'Monetary':
+          #      trainingDataframe.loc[['category'] == 'Monetary', 'category'] = 'Monetary'
+
+
+
 
     # forest = RandomForestClassifier(n_estimators=n_estimator, random_state=1)
     # sampler = SMOTE(random_state=2)
@@ -61,20 +75,44 @@ def main():
     # burde nok ha med class_label: weight se fremgangsmåte på https://towardsdatascience.com/why-weight-the-importance-of-training-on-balanced-datasets-f1e54688e7df
     # her kan du evt. prøve SMOTE istedenfor standardscaler fordi det er et ujevnt dataset, men lurer på om smote gjør det samme som reduserte accuracyen i eksempelrapport
     pipeline = make_pipeline(StandardScaler(), rfClassifier)
-    multiRFClassifier = MultiOutputClassifier(pipeline, n_jobs=7)
+    multiRFClassifier = OneVsRestClassifier(pipeline) #, n_jobs=7
     if (cfg['training']):
         # Training
         # Read training data from training set
         trainingDataframe = readDocument(cfg['filepathTrainingSet'])
         print(trainingDataframe)
+        # Exploration of data
+        print('Exploration of data: ')
+        print(['Monetary', 'Percentage', 'Option', 'Indicator', 'Temporal', 'Quantity', 'Product Number'])
+        print(categoryCount(trainingDataframe['category']))
+
         # Feature Engineering on dataframe
         trainingDataframe = featureEngineering(trainingDataframe, training=True, validation=False)
+
+
+
         # Feature Vectors
-        XTrain = trainingDataframe[['target_num', 'tweet']]
+        #Xtrain må legge til features som behandler tall og "området rundt tall"
+
+        print('Trainingdataframe')
+        print(trainingDataframe)
+        features = trainingDataframe.drop(columns=['target_num', 'category', 'tweet'])
+        #print(features)
+        #XTrain = features
+        #XTrain.replace(to_replace=pd.NA, value=None, inplace=True)
+        #['target_num',
+        XTrain = features
+        print('XTrain: ')
         print(XTrain)
+
         # Category
+        print('YTrain: ')
+
         YTrain = trainingDataframe['category']
         print(YTrain)
+
+        print('Shape, XTrain, Ytrain: ')
+        print(XTrain.shape, YTrain.shape)
 
         # Training model
         print('start training RF: ' + str(time.ctime()))
@@ -87,7 +125,8 @@ def main():
         # Feature Engineering on dataframe
         validationDataframe = featureEngineering(validationDataframe, training=True, validation=True)
         # Feature Vectors
-        XValidate = validationDataframe[['target_num', 'tweet']]
+        validationFeatures = trainingDataframe.drop(columns=['category', 'tweet'])
+        XValidate = validationFeatures
         # Category
         YValidate = validationDataframe['category']
 
@@ -97,7 +136,7 @@ def main():
         print('done predicting RF: ' + str(time.ctime()))
         # Finding accuracy and loss for current iteration
         rfAccuracy = accuracy_score(YValidate, rfValidated)
-        rfLoss = log_loss(YValidate)
+        rfLoss = log_loss(YValidate, rfValidated)
         print('accuracy RF: ' + rfAccuracy)
         print('loss RF: ' + rfLoss)
 
