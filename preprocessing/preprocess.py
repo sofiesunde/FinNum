@@ -26,59 +26,8 @@ def removeStopwords(document):
     wordDocument = ' '.join(wordDocument)
     return wordDocument
 
-# POS tag 2-3 chars abbrivation mapping to 1 char abbrevations
-# http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
-pos_code_map = {'CC': 'A', 'CD': 'B', 'DT': 'C', 'EX': 'D', 'FW': 'E', 'IN': 'F', 'JJ': 'G', 'JJR': 'H', 'JJS': 'I',
-                'LS': 'J', 'MD': 'K', 'NN': 'L', 'NNS': 'M',
-                'NNP': 'N', 'NNPS': 'O', 'PDT': 'P', 'POS': 'Q', 'PRP': 'R', 'PRP$': 'S', 'RB': 'T', 'RBR': 'U',
-                'RBS': 'V', 'RP': 'W', 'SYM': 'X', 'TO': 'Y', 'UH': 'Z',
-                'VB': '1', 'VBD': '2', 'VBG': '3', 'VBN': '4', 'VBP': '5', 'VBZ': '6', 'WDT': '7', 'WP': '8',
-                'WP$': '9', 'WRB': '@'}
-# Python 2 code_pos_map={v: k for k, v in pos_code_map.iteritems()}
-code_pos_map = {v: k for k, v in pos_code_map.items()}
-
-    # abbrivation converters
-def convert(tag):
-    try:
-        code = pos_code_map[tag]
-    except:
-        code = '?'
-    return code
-
-def inv_convert(code):
-    try:
-        tag = code_pos_map[code]
-    except:
-        tag = '?'
-    return tag
-
-    # POS tag converting
-
-def pos_tags(text):
-    tokenizer = RegexpTokenizer(r'\w+')
-    text_processed = tokenizer.tokenize(text)
-    return "".join(convert(tag) for (word, tag) in nltk.pos_tag(text_processed))
-
-def text_pos_inv_convert(text):
-    return "-".join(inv_convert(c.upper()) for c in text)
-
-#tfidf_vectorizer1 = TfidfVectorizer(
- #   max_features=5000, min_df=2, max_df=0.9, ngram_range=(1,2))
-#train_pos = tfidf_vectorizer1.fit_transform(train_data['pos'])
-#test_pos = tfidf_vectorizer1.transform(test_data['pos'])
-
-#clf = MultinomialNB(alpha=0.1).fit(train_pos, train_labels)
-#predicted = clf.predict(test_pos)
-
-def stem(document):
-    stemmer = SnowballStemmer('english')
-    document['tweets'] = document['tweets'].apply(lambda x: ' '.join([stemmer.stem(y) for y in x.split('')]))
-    return document
-
 
 # Normalization
-# vurdere å fjerne komma osv? kan bruke tweet processor istedenfor evt. må bare passe på $
-# må kanskje tokenization??
 def preProcess(document):
     preProcessed = document.lower()
     preProcessed = preProcessed.replace('\n', ' ')
@@ -95,7 +44,6 @@ def preProcess(document):
     # preProcessed = re.sub('<CashTag>', '', preProcessed)
     preProcessed = re.sub('\$[A-Za-z]([^\s]+)', '', preProcessed)
     return preProcessed
-
 
 # Evaluate features
 def categoryCount(category):
@@ -131,226 +79,7 @@ def categoryCount(category):
     categories = [monetary, percentage, option, indicator, temporal, quantity, productNum]
     return categories
 
-
-# def multipleTargetNums(dataframe):
-#   if len(target_num) > 1:
-#      for label in target_num:
-#     dataframe[['targetnum1', 'targetnum2']] = dataframe['target_num'](dataframe.teams.tolist(), index=dataframe.index)
-
-# ide : lage alt som liste med 7 felter der det er 0 eller 1 på de kategoriene,
-# tar ikke høyde for at tweeten kan ha flere tall slik at det skal være flere kategorier....
-
-# lister inni liste, klarer den ikke uansett om det er liste med tall eller binær eller liste inni liste, rart, fordi numToCategory er jo samme som target num?
-def categoryToNum(category):
-    # One hot encode
-    n = len(category)
-    categories = np.zeros((n, 7), dtype=int)
-    for i, label in enumerate(category):
-        if label == 'Monetary':
-            categories[i, 0] = 1
-
-        elif label == 'Percentage':
-            categories[i, 1] = 1
-
-        elif label == 'Option':
-            categories[i, 2] = 1
-
-        elif label == 'Indicator':
-            categories[i, 3] = 1
-
-        elif label == 'Temporal':
-            categories[i, 4] = 1
-
-        elif label == 'Quantity':
-            categories[i, 5] = 1
-
-        elif label == 'Product Number':
-            categories[i, 6] = 1
-
-    return categories
-
-def monetary(category):
-    # One hot encode
-    for label in category:
-        if label == 'Monetary':
-            categories = 1
-        else:
-            categories = 0
-
-    return categories
-
-def oneHotEncoder(category):
-    # One hot encode
-    categoriesDataframe = pd.DataFrame(
-        columns=['Monetary', 'Percentage', 'Option', 'Indicator', 'Temporal', 'Quantity', 'Product Number'])
-
-    n = len(category)
-    categories = np.zeros((n, 7), dtype=int)
-
-    for label in category:
-        print(label)
-        # categoriesDataframe.loc[i] = [1 if label == 'Monetary' else 0, 1 if label == 'Percentage' else 0, 1 if label == 'Option' else 0, 1 if label == 'Indicator' else 0, 1 if label == 'Temporal' else 0, 1 if label == 'Quantity' else 0, 1 if label == 'Product Number' else 0]
-
-        if not label == 'Monetary':
-            categoriesDataframe['Monetary'].append(0)
-        else:
-            categoriesDataframe['Monetary'].append(1)
-
-        if not label == 'Percentage':
-            categoriesDataframe['Percentage'].append(0)
-        else:
-            categoriesDataframe['Percentage'].append(1)
-
-        if not label == 'Option':
-            categoriesDataframe['Option'].append(0)
-        else:
-            categoriesDataframe['Option'].append(1)
-
-        if not label == 'Indicator':
-            categoriesDataframe['Indicator'].append(0)
-        else:
-            categoriesDataframe['Indicator'].append(1)
-
-        if not label == 'Temporal':
-            categoriesDataframe['Temporal'].append(0)
-        else:
-            categoriesDataframe['Temporal'].append(1)
-
-        if not label == 'Quantity':
-            categoriesDataframe['Quantity'].append(0)
-        else:
-            categoriesDataframe['Quantity'].append(1)
-
-        if not label == 'Product Number':
-            categoriesDataframe['Product Number'].append(0)
-        else:
-            categoriesDataframe['Product Number'].append(1)
-
-        # categoriesDataframe['Monetary'].append(1 if label == 'Monetary' else 0)
-        # categoriesDataframe['Percentage'].append(1 if label == 'Percentage' else 0)
-        # categoriesDataframe['Option'].append(1 if label == 'Option' else 0)
-        # categoriesDataframe['Indicator'].append(1 if label == 'Indicator' else 0)
-        # categoriesDataframe['Temporal'].append(1 if label == 'Temporal' else 0)
-        # categoriesDataframe['Quantity'].append(1 if label == 'Quantity' else 0)
-        # categoriesDataframe['Product Number'].append(1 if label == 'Product Number' else 0)
-
-    #print(categoriesDataframe)
-    #return categoriesDataframe
-
-def numToCategory(category):
-    categories = []
-    # map(float, categories[i].split(","))
-    for label in category:
-        if label == 'Monetary':
-            categories.append(1)
-            # return 1
-        elif label == 'Percentage':
-            categories.append(2)
-            # return 2
-        elif label == 'Option':
-            categories.append(3)
-            # return 3
-        elif label == 'Indicator':
-            categories.append(4)
-            # return 4
-        elif label == 'Temporal':
-            categories.append(5)
-            # return 5
-        elif label == 'Quantity':
-            categories.append(6)
-            # return 6
-        elif label == 'Product Number':
-            categories.append(7)
-            # return 7
-    print(categories)
-    return categories
-
-def findTarget(dataframe):
-    counter = 0
-    for num in dataframe['target_num']:
-        counter += 1
-        dataframe.append(['target num' + str(counter)])
-
-# Denne må du faktisk skrive troorororoor jeg gitt
-# def categorizationFeatures(dataframe):
-# Find all digits in tweet -> må ta riktig target num til riktig tekstforklaring på en eller annen måte :OOO
-# y = [X: $1.19] [Y: $5.29] [Z 999/1000]
-# x = re.findall(r"\$[^ ]+", y)
-# find all tall, hvis dette er likt tallet som er i target num 1
-# target num 2 osv så :
-#  se på ordene rundt dette tallet, resten kan fjernes???
-
-# ha med klassifiseringsregler her???? % osv?
-
-# dersom du vil jobbe med kun tweets med 1 tall
-def multipleProcessing(dataframe, multiple):
-    n = len(multiple)
-    print(dataframe['index'])
-    for label in enumerate(multiple):
-        if n > 1:
-            dataframe.drop(dataframe['index'])
-
-
-# finner på index :
-# data[data['year']==2016]
-# Get names of indexes for which column Age has value 30
-# indexNames = dfObj[ dfObj['Age'] == 30 ].index
-# Delete these row indexes from dataFrame
-# dfObj.drop(indexNames , inplace=True)
-
-def multicategories(category):
-    print(category)
-
-    categoryDataframe = pd.DataFrame(columns=['category'])
-    multiLabelBinarizer = MultiLabelBinarizer(classes=['Monetary'])
-    print(multiLabelBinarizer)
-    #transform = [lambda label: multiLabelBinarizer.fit_transform(label)]
-    #category = [transform for label in category]
-
-
-    for label in category:
-
-        multiLabelBinarizer.fit_transform(label)
-        print(label)
-
-    #categoryDataframe['category'].append(category)
-    print(category)
-    return category
-
-def multiProcessing(dataframe):
-
-    nums = dataframe['target_num']
-    for num in nums:
-        while len(num) < 7:
-            num.append(0)
-
-    dataframe[['target_num1', 'target_num2', 'target_num3', 'target_num4', 'target_num5', 'target_num6', 'target_num7']] = pd.DataFrame(dataframe.target_num.tolist(), index=dataframe.index)
-    dataframe = dataframe.fillna(0)
-    return dataframe
-
-def multipleProcessing1(dataframe):
-    print(dataframe)
-    nums = dataframe['target_num']
-    counter = 0
-    #for i, num in nums:
-        #counter += 1
-        #if len(num) > 1:
-            # multiple = dataframe[num].index
-            #dataframe.drop(dataframe[['index']] == i)
-
-        # multiple = dataframe[len(num) > 1]
-        # dataframe.drop(multiple, inplace=True)
-    # for label in dataframe['target_num']:
-    #   if len(label) > 1:
-    #      dataframe.drop(dataframe['index'])
-    #return dataframe
-
-
 # TF-IDF
-# min_df can be adjusted, 1 = standard
-# stop_words kan fjernes
-# ngrams kan gjøres om til kun bare unigrams, som er default
-
 def tfidf(dataframe, training):
 
     if training:
@@ -376,20 +105,6 @@ def tfidf(dataframe, training):
     return dataframe
 
 
-    #  HER ER DET DET MÅ ENDRES NOE ..........
-    # dataframe = dataframe.fillna(0)
-    # dataframe['tweet'].replace(to_replace=pd.NA, value=None, inplace=True)
-
-    #dataframe['tweet'] = pd.DataFrame(features.todense(), tfidfVector.get_feature_names())
-
-    # for i, col in enumerate(tfidf.get_feature_names()):
-    #    dataframe[col] = pd.Series(features[:, i].toarray().ravel())
-
-    # sparse = scipy.sparse.eye(features.todense(), tfidf.get_feature_names())
-    # dataframe = dataframe.sparse.from_spmatrix(sparse)
-
-    # dataframe = pd.DataFrame.sparse.from_spmatrix(sparse)
-
 # Feature Engineering
 def featureEngineering(dataframe, training):
     # Split list of target nums into several columns
@@ -397,6 +112,8 @@ def featureEngineering(dataframe, training):
     print(dataframe)
     # Preprocess tweet
     dataframe['tweet'] = dataframe['tweet'].apply(lambda tweet: preProcess(tweet))
+
+    # Methods tested, not used
     #dataframe['target_num'] = dataframe['target:num'].apply()
     # dataframe['target_num'] = dataframe['tweet'].apply(lambda num: multipleTargetNums(num))
     # dataframe = dataframe.drop(dataframe[len(dataframe['target_num'] > 1)].index, inplace=True)
@@ -409,33 +126,272 @@ def featureEngineering(dataframe, training):
     # print(df[df['alfa'].apply(lambda x: len(x.split(',')) < 3)])
     # categoryDataframe = dataframe['category'].apply(lambda category: oneHotEncoder(category))
     # print(categoryDataframe)
+    # dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
 
     # Categorization on dataframe
-
-    print('Her')
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(dataframe.head(5))
     # One Hot Encoding of categories
     one_hot = pd.get_dummies(dataframe['category'].apply(pd.Series).stack()).sum(level=0)
 
-    #dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
-
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(one_hot.head(5))
     #one_hot = pd.get_dummies(dataframe['category'])
+
     # Drop category column as it is now encoded
     dataframe = dataframe.drop('category', axis=1)
 
     # Join the encoded dataframe
     dataframe = dataframe.join(one_hot, how='outer')
 
-
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-        print(dataframe.head(5))
-    dataframe.head(5)
-
+    # POS-Tagging, 'ruined' the formatting of the dataframe
     #dataframe['tweet_pos'] = dataframe.apply(lambda x: pos_tags(x['tweet']), axis=1)
 
     # TFIDF on dataframe
     featureDataframe = tfidf(dataframe, training)
+
     return featureDataframe
+
+########################################################################################################################
+
+# Methods tested but not used:
+
+# POS tag 2-3 chars abbrivation mapping to 1 char abbrevations
+# http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
+#pos_code_map = {'CC': 'A', 'CD': 'B', 'DT': 'C', 'EX': 'D', 'FW': 'E', 'IN': 'F', 'JJ': 'G', 'JJR': 'H', 'JJS': 'I',
+#                'LS': 'J', 'MD': 'K', 'NN': 'L', 'NNS': 'M',
+#                'NNP': 'N', 'NNPS': 'O', 'PDT': 'P', 'POS': 'Q', 'PRP': 'R', 'PRP$': 'S', 'RB': 'T', 'RBR': 'U',
+#                'RBS': 'V', 'RP': 'W', 'SYM': 'X', 'TO': 'Y', 'UH': 'Z',
+#                'VB': '1', 'VBD': '2', 'VBG': '3', 'VBN': '4', 'VBP': '5', 'VBZ': '6', 'WDT': '7', 'WP': '8',
+#                'WP$': '9', 'WRB': '@'}
+# Python 2 code_pos_map={v: k for k, v in pos_code_map.iteritems()}
+#code_pos_map = {v: k for k, v in pos_code_map.items()}
+
+# abbrivation converters
+#def convert(tag):
+#    try:
+#        code = pos_code_map[tag]
+#    except:
+#        code = '?'
+#    return code
+
+#def inv_convert(code):
+#    try:
+#        tag = code_pos_map[code]
+#    except:
+#        tag = '?'
+#    return tag
+
+# POS tag converting
+
+#def pos_tags(text):
+#    tokenizer = RegexpTokenizer(r'\w+')
+#    text_processed = tokenizer.tokenize(text)
+#    return "".join(convert(tag) for (word, tag) in nltk.pos_tag(text_processed))
+
+#def text_pos_inv_convert(text):
+#    return "-".join(inv_convert(c.upper()) for c in text)
+
+#def stem(document):
+#    stemmer = SnowballStemmer('english')
+#    document['tweets'] = document['tweets'].apply(lambda x: ' '.join([stemmer.stem(y) for y in x.split('')]))
+#    return document
+
+#def multipleTargetNums(dataframe):
+#   if len(target_num) > 1:
+#      for label in target_num:
+#     dataframe[['targetnum1', 'targetnum2']] = dataframe['target_num'](dataframe.teams.tolist(), index=dataframe.index)
+
+
+#def categoryToNum(category):
+    # One hot encode
+#    n = len(category)
+#    categories = np.zeros((n, 7), dtype=int)
+#    for i, label in enumerate(category):
+#        if label == 'Monetary':
+#            categories[i, 0] = 1
+
+#        elif label == 'Percentage':
+#            categories[i, 1] = 1
+
+#        elif label == 'Option':
+#            categories[i, 2] = 1
+
+#        elif label == 'Indicator':
+#            categories[i, 3] = 1
+
+#        elif label == 'Temporal':
+#            categories[i, 4] = 1
+
+#        elif label == 'Quantity':
+#            categories[i, 5] = 1
+
+#        elif label == 'Product Number':
+#            categories[i, 6] = 1
+
+#    return categories
+
+#def monetary(category):
+    # One hot encode
+#    for label in category:
+#        if label == 'Monetary':
+#            categories = 1
+#        else:
+#            categories = 0
+
+#    return categories
+
+#def oneHotEncoder(category):
+    # One hot encode
+#    categoriesDataframe = pd.DataFrame(
+#        columns=['Monetary', 'Percentage', 'Option', 'Indicator', 'Temporal', 'Quantity', 'Product Number'])
+
+#    n = len(category)
+#    categories = np.zeros((n, 7), dtype=int)
+
+#    for label in category:
+#        print(label)
+        # categoriesDataframe.loc[i] = [1 if label == 'Monetary' else 0, 1 if label == 'Percentage' else 0, 1 if label == 'Option' else 0, 1 if label == 'Indicator' else 0, 1 if label == 'Temporal' else 0, 1 if label == 'Quantity' else 0, 1 if label == 'Product Number' else 0]
+
+#        if not label == 'Monetary':
+#            categoriesDataframe['Monetary'].append(0)
+#        else:
+#            categoriesDataframe['Monetary'].append(1)
+
+#        if not label == 'Percentage':
+#            categoriesDataframe['Percentage'].append(0)
+#        else:
+#            categoriesDataframe['Percentage'].append(1)
+
+#        if not label == 'Option':
+#            categoriesDataframe['Option'].append(0)
+#        else:
+#            categoriesDataframe['Option'].append(1)
+
+#        if not label == 'Indicator':
+#            categoriesDataframe['Indicator'].append(0)
+#        else:
+#            categoriesDataframe['Indicator'].append(1)
+
+#        if not label == 'Temporal':
+#            categoriesDataframe['Temporal'].append(0)
+#        else:
+#            categoriesDataframe['Temporal'].append(1)
+
+#        if not label == 'Quantity':
+#            categoriesDataframe['Quantity'].append(0)
+#        else:
+#            categoriesDataframe['Quantity'].append(1)
+
+#        if not label == 'Product Number':
+#            categoriesDataframe['Product Number'].append(0)
+#        else:
+#            categoriesDataframe['Product Number'].append(1)
+
+        # categoriesDataframe['Monetary'].append(1 if label == 'Monetary' else 0)
+        # categoriesDataframe['Percentage'].append(1 if label == 'Percentage' else 0)
+        # categoriesDataframe['Option'].append(1 if label == 'Option' else 0)
+        # categoriesDataframe['Indicator'].append(1 if label == 'Indicator' else 0)
+        # categoriesDataframe['Temporal'].append(1 if label == 'Temporal' else 0)
+        # categoriesDataframe['Quantity'].append(1 if label == 'Quantity' else 0)
+        # categoriesDataframe['Product Number'].append(1 if label == 'Product Number' else 0)
+
+#    print(categoriesDataframe)
+#    return categoriesDataframe
+
+#def numToCategory(category):
+#    categories = []
+    # map(float, categories[i].split(","))
+#    for label in category:
+#        if label == 'Monetary':
+#            categories.append(1)
+
+#        elif label == 'Percentage':
+#            categories.append(2)
+
+#        elif label == 'Option':
+#            categories.append(3)
+
+#        elif label == 'Indicator':
+#            categories.append(4)
+
+#        elif label == 'Temporal':
+#            categories.append(5)
+
+#        elif label == 'Quantity':
+#            categories.append(6)
+
+#        elif label == 'Product Number':
+#            categories.append(7)
+
+#    print(categories)
+#    return categories
+
+#def findTarget(dataframe):
+#    counter = 0
+#    for num in dataframe['target_num']:
+#        counter += 1
+#        dataframe.append(['target num' + str(counter)])
+
+
+#def multipleProcessing(dataframe, multiple):
+#    n = len(multiple)
+#    print(dataframe['index'])
+#    for label in enumerate(multiple):
+#        if n > 1:
+#            dataframe.drop(dataframe['index'])
+
+
+# finner på index :
+# data[data['year']==2016]
+# Get names of indexes for which column Age has value 30
+# indexNames = dfObj[ dfObj['Age'] == 30 ].index
+# Delete these row indexes from dataFrame
+# dfObj.drop(indexNames , inplace=True)
+
+#def multicategories(category):
+#    print(category)
+
+#    categoryDataframe = pd.DataFrame(columns=['category'])
+#    multiLabelBinarizer = MultiLabelBinarizer(classes=['Monetary'])
+#    print(multiLabelBinarizer)
+#    transform = [lambda label: multiLabelBinarizer.fit_transform(label)]
+#    category = [transform for label in category]
+
+
+#    for label in category:
+
+#        multiLabelBinarizer.fit_transform(label)
+#        print(label)
+
+#    categoryDataframe['category'].append(category)
+#    print(category)
+#    return category
+
+#def multiProcessing(dataframe):
+
+#    nums = dataframe['target_num']
+#    for num in nums:
+#        while len(num) < 7:
+#            num.append(0)
+
+#    dataframe[['target_num1', 'target_num2', 'target_num3', 'target_num4', 'target_num5', 'target_num6', 'target_num7']] = pd.DataFrame(dataframe.target_num.tolist(), index=dataframe.index)
+#    dataframe = dataframe.fillna(0)
+#    return dataframe
+
+#def multipleProcessing1(dataframe):
+#    print(dataframe)
+#    nums = dataframe['target_num']
+#    counter = 0
+#    for i, num in nums:
+#        counter += 1
+#        if len(num) > 1:
+#            multiple = dataframe[num].index
+#            dataframe.drop(dataframe[['index']] == i)
+
+#        multiple = dataframe[len(num) > 1]
+#        dataframe.drop(multiple, inplace=True)
+#    for label in dataframe['target_num']:
+#       if len(label) > 1:
+#          dataframe.drop(dataframe['index'])
+#    return dataframe

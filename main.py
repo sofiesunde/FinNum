@@ -4,7 +4,7 @@
 
 from configuration import configuration as cfg
 from preprocessing.read import readDocument, saveDataframe, loadDataframe, readTestSet
-from preprocessing.preprocess import featureEngineering, categoryToNum, categoryCount
+from preprocessing.preprocess import featureEngineering, categoryCount
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, log_loss, confusion_matrix, plot_confusion_matrix, precision_recall_fscore_support
@@ -25,58 +25,11 @@ import pandas as pd
 from sklearn.utils import class_weight, compute_sample_weight
 
 def main():
-    # Read and save or load dataframe
-    #if cfg['readDocumentSaveDataframe']:
-     #   dataframe = readDocument(cfg['filepathTrainingSet'])
-      #  saveDataframe(dataframe, 'DataframeTrainingSet')
-       # print('dataframe saved')
-    #else:
-     #   dataframe = loadDataframe(cfg['filename'])
-      #  print("dataframe loaded")
-
-    # Load or process dataframe
-    #if cfg['loadPreprocessedDataframe']:
-     #   dataframe = loadDataframe(cfg['processedFilename'])
-      #  print('processed dataframe loaded')
-    #else:
-     #   print('featureEngineering started')
-      #  dataframe = featureEngineering(dataframe, training=True, validation=False)
-        #saveDataframe(dataframe, cfg['processedFilename'])
-       # print('processed dataframe saved')
-
-    # må på en eller annen måte presisere target num i tweeten som input tror jeg
-    #print('her kommer dataframe')
-    #print(dataframe)
-    # skal man si noe om at første element i listen target_num = første element i category???
-
-
-
-    # Her begynner koden din nå
-    ###################################################################################################
-    #if (cfg['training']):
-        # Training
-        # Read training data from training set
-     #   trainingDataframe = readDocument(cfg['filepathTrainingSet'])
-      #  print(trainingDataframe.info())
-       # print(trainingDataframe.category.value_counts())
-        #for label in trainingDataframe[['category']:
-         #   if label == 'Monetary':
-          #      trainingDataframe.loc[['category'] == 'Monetary', 'category'] = 'Monetary'
-
-
-
-
-    # forest = RandomForestClassifier(n_estimators=n_estimator, random_state=1)
-    # sampler = SMOTE(random_state=2)
-    # pipeline = make_pipeline(sampler, forest)
-    # multi_target_forest = MultiOutputClassifier(pipeline, n_jobs=-1)
-    # model = multi_target_forest.fit(vecs, vec_labels)
-
     # Code found at https://github.com/scikit-learn-contrib/imbalanced-learn/issues/337
     rfClassifier = RandomForestClassifier(n_estimators=1000)
     svmClassifier = SVC(decision_function_shape='ovr')
-    # burde nok ha med class_label: weight se fremgangsmåte på https://towardsdatascience.com/why-weight-the-importance-of-training-on-balanced-datasets-f1e54688e7df
-    # her kan du evt. prøve SMOTE istedenfor standardscaler fordi det er et ujevnt dataset, men lurer på om smote gjør det samme som reduserte accuracyen i eksempelrapport
+
+    # Classifiers
     #sampler = SMOTE(random_state=2)
     rfPipeline = make_pipeline(StandardScaler(with_std=False, with_mean=False), rfClassifier)
     multiRFClassifier = MultiOutputClassifier(rfPipeline, n_jobs=1)
@@ -112,7 +65,6 @@ def main():
 
     # Category
     print('YTrain: ')
-
     YTrain = trainingDataframe[['Indicator', 'Monetary', 'Option', 'Percentage', 'Product Number', 'Quantity', 'Temporal']]
     print(YTrain)
 
@@ -225,48 +177,6 @@ def main():
         #plotRF = plot_confusion_matrix(rfClassifier.classifier, XTest, YTest, display_labels=class_names, cmap=plt.cm.Blues, normalize='true')
         #plotRF.ax_.set_title("Random Forest")
         #plt.savefig('results/RF.png')
-
-    ###################################################################################################
-
-    #XTrain, XValidate, YTrain, YValidate = train_test_split(
-    #    X, Y, test_size=cfg['testSize'], random_state=42)
-
-    # Training
-    #print('start training SVM: ' + str(time.ctime()))
-    #svmClassifier = SupportVectorMachineClassifier()
-    #svmClassifier.svmClassifier.fit(XTrain, YTrain)
-
-    #enumerate as boolean??????
-
-    #print('start training RF: ' + str(time.ctime()))
-    #rfClassifier = RandomForestClassifier()
-    #rfClassifier.rfClassifier.fit(XTrain, YTrain)
-
-    #print('done training')
-
-    # HER SKAL DEV SETTET BRUKES
-
-
-    # Classification and accuracy with validation
-    #print('start predicting SVM: ' + str(time.ctime()))
-    #svmClassified = svmClassifier.svmClassifier.predict(XValidate)
-    #svmAccuracy = accuracy_score(YValidate, svmClassified)
-    #svmLoss = log_loss(YValidate)
-    #print('accuracy SVM: ' + svmAccuracy)
-    #print('loss SVM: ' + svmLoss)
-
-    #print('start predicting RF: ' + str(time.ctime()))
-    #rfClassified = rfClassifier.rfClassifier.predict(XValidate)
-    #rfAccuracy = accuracy_score(YValidate, rfClassified)
-    #rfLoss = log_loss(YValidate)
-    #print('accuracy RF: ' + rfAccuracy)
-    #print('loss RF: ' + rfLoss)
-
-    # du bør ha med LOSS også i tillegg til accuracy, er dette riktig loss????
-    # developmentSet is for validation
-    #developmentSet = readDocument(cfg['filepathDevelopmentSet'])
-    # testSet is for testing
-    #testSet = readTestSet(cfg['filepathTestSet'])
 
 
 if __name__ == '__main__':

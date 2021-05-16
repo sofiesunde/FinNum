@@ -3,19 +3,7 @@
 # Code structure inspired by Karoline Bonnerud - https://github.com/karolbon/bot-or-human
 
 import json
-import numpy as np
 import pandas as pd
-import pickle
-import seaborn as sb
-import matplotlib as plt
-
-#def readTrainingSet():
- #   with open("/Users/sofiesunde/GitHub/FinNum/datasets/FinNum_training_rebuilded.json", "r", encoding="latin-1") as file:
-  #      document = json.load(file)
-   # trainingSet = []
-    #for tweet in document:
-     #   trainingSet.append(tweet)
-    #return trainingSet
 
 def readDocument(filepath):
     with open(filepath, 'r', encoding='latin-1') as file:
@@ -33,7 +21,7 @@ def readDocument(filepath):
 
     return dataframe
 
-# spørs hvilket test set du bruker, test set fra 2020 ligger i datasets mappen
+# Test set from 2020 used, where the categories are included, so this method is not used, as of now
 def readTestSet(filepath):
     with open(filepath, 'r', encoding='latin-1') as file:
         document = json.load(file)
