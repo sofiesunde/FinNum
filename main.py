@@ -7,16 +7,19 @@ from preprocessing.read import readDocument, saveDataframe, loadDataframe, readT
 from preprocessing.preprocess import featureEngineering, categoryToNum, categoryCount
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn import *
 #from models import SupportVectorMachineClassifier, RandomForestClassifier, EnsembleClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss, confusion_matrix, plot_confusion_matrix, precision_recall_fscore_support
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
+from sklearn.svm import SVC
+from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.utils import shuffle
 import numpy as np
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plt
 import time
 import pandas as pd
 
@@ -72,10 +75,14 @@ def main():
 
     # Code found at https://github.com/scikit-learn-contrib/imbalanced-learn/issues/337
     rfClassifier = RandomForestClassifier()
+    svmClassifier = SVC()
     # burde nok ha med class_label: weight se fremgangsmåte på https://towardsdatascience.com/why-weight-the-importance-of-training-on-balanced-datasets-f1e54688e7df
     # her kan du evt. prøve SMOTE istedenfor standardscaler fordi det er et ujevnt dataset, men lurer på om smote gjør det samme som reduserte accuracyen i eksempelrapport
-    pipeline = make_pipeline(StandardScaler(), rfClassifier)
-    multiRFClassifier = OneVsRestClassifier(pipeline) #, n_jobs=7
+    rfPipeline = make_pipeline(StandardScaler(), rfClassifier)
+    multiRFClassifier = MultiOutputClassifier(rfPipeline, n_jobs=-1)
+    svmPipeline = make_pipeline(StandardScaler(), svmClassifier)
+    multiSVMClassifier = MultiOutputClassifier(svmPipeline, n_jobs=-1)
+
     if (cfg['training']):
         # Training
         # Read training data from training set
@@ -87,20 +94,19 @@ def main():
         print(categoryCount(trainingDataframe['category']))
 
         # Feature Engineering on dataframe
-        trainingDataframe = featureEngineering(trainingDataframe, training=True, validation=False)
+        trainingDataframe = featureEngineering(trainingDataframe, training=True)
 
 
 
         # Feature Vectors
         #Xtrain må legge til features som behandler tall og "området rundt tall"
-
+        with pd.option_context('display.max_rows', None, 'display.max_columns',
+                               None):  # more options can be specified also
+            print(trainingDataframe.tail(5))
         print('Trainingdataframe')
         print(trainingDataframe)
-        features = trainingDataframe.drop(columns=['target_num', 'category', 'tweet'])
-        #print(features)
-        #XTrain = features
-        #XTrain.replace(to_replace=pd.NA, value=None, inplace=True)
-        #['target_num',
+        features = trainingDataframe.drop(columns=['target_num', 'tweet', 'Indicator', 'Monetary', 'Option', 'Percentage', 'Product Number', 'Quantity', 'Temporal'])
+
         XTrain = features
         print('XTrain: ')
         print(XTrain)
@@ -108,7 +114,7 @@ def main():
         # Category
         print('YTrain: ')
 
-        YTrain = trainingDataframe['category']
+        YTrain = trainingDataframe[['Indicator', 'Monetary', 'Option', 'Percentage', 'Product Number', 'Quantity', 'Temporal']]
         print(YTrain)
 
         print('Shape, XTrain, Ytrain: ')
@@ -119,33 +125,59 @@ def main():
         multiRFClassifier.fit(XTrain, YTrain)
         print('done training RF: ' + str(time.ctime()))
 
+        print('start training SVM: ' + str(time.ctime()))
+        multiSVMClassifier.fit(XTrain, YTrain)
+        print('done training SVM: ' + str(time.ctime()))
+
         # Validation
         # Read validation data from development test set
         validationDataframe = readDocument(cfg['filepathDevelopmentSet'])
         # Feature Engineering on dataframe
-        validationDataframe = featureEngineering(validationDataframe, training=True, validation=True)
+        validationDataframe = featureEngineering(validationDataframe, training=False)
         # Feature Vectors
-        validationFeatures = trainingDataframe.drop(columns=['category', 'tweet'])
+        validationFeatures = validationDataframe.drop(columns=['target_num', 'tweet', 'Indicator', 'Monetary', 'Option', 'Percentage', 'Product Number', 'Quantity', 'Temporal'])
         XValidate = validationFeatures
         # Category
-        YValidate = validationDataframe['category']
+        YValidate = validationDataframe[
+            ['Indicator', 'Monetary', 'Option', 'Percentage', 'Product Number', 'Quantity', 'Temporal']]
 
         # Validation of model
         print('start predicting RF: ' + str(time.ctime()))
         rfValidated = multiRFClassifier.predict(XValidate)
         print('done predicting RF: ' + str(time.ctime()))
-        # Finding accuracy and loss for current iteration
-        rfAccuracy = accuracy_score(YValidate, rfValidated)
-        rfLoss = log_loss(YValidate, rfValidated)
-        print('accuracy RF: ' + rfAccuracy)
-        print('loss RF: ' + rfLoss)
+
+        # Finding accuracy and loss for current iteration, not supported by SKLearn, ValueError: multiclass - multioutput is not supported
+        #rfAccuracy = accuracy_score(YValidate, rfValidated)
+        #print('accuracy RF: ' + str(rfAccuracy))
+        #rfLoss = log_loss(YValidate, rfValidated)
+        #print('loss RF: ' + str(rfLoss))
+
+        # Estimate of accuracy and standard deviation instead
+        scores = cross_val_score(multiRFClassifier, XValidate, YValidate, cv=5)
+        print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
+
+
+        print('start predicting SVM: ' + str(time.ctime()))
+        svmValidated = multiSVMClassifier.predict(XValidate)
+        print('done predicting SVM: ' + str(time.ctime()))
+
+        # Finding accuracy and loss for current iteration, not supported by SKLearn, ValueError: multiclass - multioutput is not supported
+        #svmAccuracy = accuracy_score(YValidate, svmValidated)
+        #print('accuracy SVM: ' + str(svmAccuracy))
+        #svmLoss = log_loss(YValidate, svmValidated)
+        #print('loss SVM: ' + str(svmLoss))
+
+        # Estimate of accuracy and standard deviation instead
+        scores = cross_val_score(multiRFClassifier, XValidate, YValidate, cv=5)
+        print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
+
 
     else:
         # Testing
         # Read test data from test set
         testDataframe = readDocument(cfg['filepathTestSet'])
         # Feature Engineering on dataframe
-        testDataframe = featureEngineering(testDataframe, training=False, validation=False)
+        testDataframe = featureEngineering(testDataframe, training=False)
         # Feature Vectors
         XTest = testDataframe[['target_num', 'tweet']]
         # Category
@@ -156,18 +188,31 @@ def main():
         RFClassified = multiRFClassifier.predict(XTest)
         print('done testing RF: ' + str(time.ctime()))
         # Finding accuracy and loss for current iteration
-        RFAccuracy = accuracy_score(YTest, RFClassified)
+        rfAccuracy = accuracy_score(YTest, RFClassified)
         RFLoss = log_loss(YTest)
         RFMetrics = precision_recall_fscore_support(
             YTest, RFClassified, average='binary')
-        print('accuracy RF: ' + RFAccuracy)
+        print('accuracy RF: ' + rfAccuracy)
         print('loss RF: ' + RFLoss)
         print('metrics RF: ' + RFMetrics)
+
+        print('start testing SVM: ' + str(time.ctime()))
+        svmClassified = multiSVMClassifier.predict(XTest)
+        print('done testing SVM: ' + str(time.ctime()))
+        # Finding accuracy and loss for current iteration
+        svmAccuracy = accuracy_score(YTest, svmClassified)
+        svmLoss = log_loss(YTest)
+        svmMetrics = precision_recall_fscore_support(
+            YTest, svmClassified, average='binary')
+        print('accuracy SVM: ' + svmAccuracy)
+        print('loss SVM: ' + svmLoss)
+        print('metrics SVM: ' + svmMetrics)
+
         # Må du her gjøre om tilbake tall til kategori????
         class_names = ['Monetary', 'Percentage', 'Option', 'Indicator', 'Temporal', 'Quantity', 'Product Number']
-        plotRF = plot_confusion_matrix(rfClassifier.classifier, XTest, YTest, display_labels=class_names, cmap=plot.cm.Blues, normalize='true')
+        plotRF = plot_confusion_matrix(rfClassifier.classifier, XTest, YTest, display_labels=class_names, cmap=plt.cm.Blues, normalize='true')
         plotRF.ax_.set_title("Random Forest")
-        plot.savefig('results/RF.png')
+        plt.savefig('results/RF.png')
 
     ###################################################################################################
 

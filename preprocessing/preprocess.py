@@ -301,20 +301,23 @@ def multipleProcessing1(dataframe):
 # stop_words kan fjernes
 # ngrams kan gjøres om til kun bare unigrams, som er default
 
-def tfidf(dataframe, training, validation):
+def tfidf(dataframe, training):
     if training:
+        print(dataframe)
         print('tfidf started')
-        tfidfVector = TfidfVectorizer(stop_words='english', min_df=0.01, max_df=0.9, ngram_range=(1, 3))
+        tfidfVector = TfidfVectorizer(stop_words='english', min_df=0.0129, max_df=0.75, ngram_range=(1, 3))
         #dataframe['tweet'] = tfidfVector.fit_transform(dataframe['tweet']).toarray()
         features = tfidfVector.fit_transform(dataframe['tweet']).toarray()
         print(features)
         print(features.shape)
-        pickle.dump(tfidfVector, open('datasets/tfidf.txt', 'wb'))
+        pickle.dump(tfidfVector, open('tfidf.pkl', 'wb'))
     else:
         print('loading tfidf started')
-        # tfidf = pickle.load(open('datasets/tfidf.txt', 'wb'))
-        # tfidf = loadDataframe('tfidf')
-        # features = tfidf.transform(dataframe['tweet'])
+        tfidfVector = pickle.load(open('tfidf.pkl', 'rb'))
+        print('corpus: ', tfidfVector, type(tfidfVector))
+
+        features = tfidfVector.transform(dataframe['tweet']).toarray()
+
     for i, col in enumerate(tfidfVector.get_feature_names()):
         dataframe[col] = pd.Series(features[:, i])
 
@@ -338,7 +341,7 @@ def tfidf(dataframe, training, validation):
 
 
 # Feature Engineering
-def featureEngineering(dataframe, training, validation):
+def featureEngineering(dataframe, training):
     # Split list of target nums into several columns
     #dataframe = multiProcessing(dataframe)
     print(dataframe)
@@ -358,10 +361,29 @@ def featureEngineering(dataframe, training, validation):
     # print(categoryDataframe)
 
     # Categorization on dataframe
-    dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
+    print('Her')
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(dataframe.head(5))
+    one_hot = pd.get_dummies(dataframe['category'].apply(pd.Series).stack()).sum(level=0)
 
+    #dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
+    print(dataframe.head(5))
+
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(one_hot.head(5))
+    #one_hot = pd.get_dummies(dataframe['category'])
+    # Drop column B as it is now encoded
+    dataframe = dataframe.drop('category', axis=1)
+    #drop(columns=['target_
+    # Join the encoded df
+    dataframe = dataframe.join(one_hot, how='outer')
+    #dataframe = pd.concat([dataframe, one_hot], axis=1, ignore_index=True)
+    print('HER')
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(dataframe.head(5))
+    dataframe.head(5)
     # TFIDF on dataframe
-    featureDataframe = tfidf(dataframe, training, validation)
+    featureDataframe = tfidf(dataframe, training)
     return featureDataframe
 
 # dataframe = loadDataframe('package.json')
