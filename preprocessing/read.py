@@ -6,6 +6,8 @@ import json
 import numpy as np
 import pandas as pd
 import pickle
+import seaborn as sb
+import matplotlib as plt
 
 #def readTrainingSet():
  #   with open("/Users/sofiesunde/GitHub/FinNum/datasets/FinNum_training_rebuilded.json", "r", encoding="latin-1") as file:
@@ -45,4 +47,3 @@ def saveDataframe(dataframe, filename):
 def loadDataframe(filename):
     dataframe = pd.read_pickle('datasets/' + filename + '.txt')
     return dataframe
-

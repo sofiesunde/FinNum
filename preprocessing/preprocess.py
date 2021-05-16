@@ -12,6 +12,9 @@ import numpy as np
 import pandas as pd
 import pickle
 from scipy.sparse import csr_matrix
+import nltk
+from nltk.tokenize import RegexpTokenizer
+from nltk import pos_tag, word_tokenize
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
@@ -23,6 +26,49 @@ def removeStopwords(document):
     wordDocument = ' '.join(wordDocument)
     return wordDocument
 
+# POS tag 2-3 chars abbrivation mapping to 1 char abbrevations
+# http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
+pos_code_map = {'CC': 'A', 'CD': 'B', 'DT': 'C', 'EX': 'D', 'FW': 'E', 'IN': 'F', 'JJ': 'G', 'JJR': 'H', 'JJS': 'I',
+                'LS': 'J', 'MD': 'K', 'NN': 'L', 'NNS': 'M',
+                'NNP': 'N', 'NNPS': 'O', 'PDT': 'P', 'POS': 'Q', 'PRP': 'R', 'PRP$': 'S', 'RB': 'T', 'RBR': 'U',
+                'RBS': 'V', 'RP': 'W', 'SYM': 'X', 'TO': 'Y', 'UH': 'Z',
+                'VB': '1', 'VBD': '2', 'VBG': '3', 'VBN': '4', 'VBP': '5', 'VBZ': '6', 'WDT': '7', 'WP': '8',
+                'WP$': '9', 'WRB': '@'}
+# Python 2 code_pos_map={v: k for k, v in pos_code_map.iteritems()}
+code_pos_map = {v: k for k, v in pos_code_map.items()}
+
+    # abbrivation converters
+def convert(tag):
+    try:
+        code = pos_code_map[tag]
+    except:
+        code = '?'
+    return code
+
+def inv_convert(code):
+    try:
+        tag = code_pos_map[code]
+    except:
+        tag = '?'
+    return tag
+
+    # POS tag converting
+
+def pos_tags(text):
+    tokenizer = RegexpTokenizer(r'\w+')
+    text_processed = tokenizer.tokenize(text)
+    return "".join(convert(tag) for (word, tag) in nltk.pos_tag(text_processed))
+
+def text_pos_inv_convert(text):
+    return "-".join(inv_convert(c.upper()) for c in text)
+
+#tfidf_vectorizer1 = TfidfVectorizer(
+ #   max_features=5000, min_df=2, max_df=0.9, ngram_range=(1,2))
+#train_pos = tfidf_vectorizer1.fit_transform(train_data['pos'])
+#test_pos = tfidf_vectorizer1.transform(test_data['pos'])
+
+#clf = MultinomialNB(alpha=0.1).fit(train_pos, train_labels)
+#predicted = clf.predict(test_pos)
 
 def stem(document):
     stemmer = SnowballStemmer('english')
@@ -36,7 +82,6 @@ def stem(document):
 def preProcess(document):
     preProcessed = document.lower()
     preProcessed = preProcessed.replace('\n', ' ')
-    # preProcessed = stem(preProcessed)
     preProcessed = removeStopwords(preProcessed)
     # substitute https into URL, @ into UserReply, and removes them
     # preProcessed = re.sub('https([^\s]+)', '<URL>', preProcessed)
@@ -302,6 +347,7 @@ def multipleProcessing1(dataframe):
 # ngrams kan gjøres om til kun bare unigrams, som er default
 
 def tfidf(dataframe, training):
+
     if training:
         print(dataframe)
         print('tfidf started')
@@ -338,7 +384,6 @@ def tfidf(dataframe, training):
     # dataframe = dataframe.sparse.from_spmatrix(sparse)
 
     # dataframe = pd.DataFrame.sparse.from_spmatrix(sparse)
-
 
 # Feature Engineering
 def featureEngineering(dataframe, training):
@@ -382,6 +427,9 @@ def featureEngineering(dataframe, training):
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(dataframe.head(5))
     dataframe.head(5)
+
+    #dataframe['tweet_pos'] = dataframe.apply(lambda x: pos_tags(x['tweet']), axis=1)
+
     # TFIDF on dataframe
     featureDataframe = tfidf(dataframe, training)
     return featureDataframe

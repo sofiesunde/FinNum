@@ -5,12 +5,7 @@
 configuration = { # filepath til test sett er foreløpig feil
     'filepathTrainingSet': 'datasets/FinNum_training_rebuilded.json',
     'filepathDevelopmentSet': 'datasets/FinNum_dev_rebuilded.json',
-    'filepathTestSet': 'datasets/FinNum_dev_rebuilded.json',
-    'readDocumentSaveDataframe': True,
-    'filename': 'DataframeTrainingSet',
-    'loadPreprocessedDataframe': False,
-    'processedFilename': 'DataframePreprocessedSet',
-    'testSize': 1,
-    'training': True #før du endrer denne til false må du sjekke at du ikke skal fjerne kategori fra datasettet
+    'filepathTestSet': 'datasets/FinNum_test_all_with_GS.json',
+    'testing': True
 }
-# 'filepathTrainingSet': 'datasets/package.json',
+
