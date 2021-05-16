@@ -265,6 +265,11 @@ def numToCategory(category):
     print(categories)
     return categories
 
+def findTarget(dataframe):
+    counter = 0
+    for num in dataframe['target_num']:
+        counter += 1
+        dataframe.append(['target num' + str(counter)])
 
 # Denne må du faktisk skrive troorororoor jeg gitt
 # def categorizationFeatures(dataframe):
@@ -406,24 +411,25 @@ def featureEngineering(dataframe, training):
     # print(categoryDataframe)
 
     # Categorization on dataframe
+
     print('Her')
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(dataframe.head(5))
+    # One Hot Encoding of categories
     one_hot = pd.get_dummies(dataframe['category'].apply(pd.Series).stack()).sum(level=0)
 
     #dataframe['category'] = dataframe['category'].apply(lambda category: categoryToNum(category))
-    print(dataframe.head(5))
 
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(one_hot.head(5))
     #one_hot = pd.get_dummies(dataframe['category'])
-    # Drop column B as it is now encoded
+    # Drop category column as it is now encoded
     dataframe = dataframe.drop('category', axis=1)
-    #drop(columns=['target_
-    # Join the encoded df
+
+    # Join the encoded dataframe
     dataframe = dataframe.join(one_hot, how='outer')
-    #dataframe = pd.concat([dataframe, one_hot], axis=1, ignore_index=True)
-    print('HER')
+
+
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(dataframe.head(5))
     dataframe.head(5)
@@ -433,6 +439,3 @@ def featureEngineering(dataframe, training):
     # TFIDF on dataframe
     featureDataframe = tfidf(dataframe, training)
     return featureDataframe
-
-# dataframe = loadDataframe('package.json')
-# featureEngineering(dataframe, training=True)

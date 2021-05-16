@@ -6,6 +6,6 @@ configuration = { # filepath til test sett er foreløpig feil
     'filepathTrainingSet': 'datasets/FinNum_training_rebuilded.json',
     'filepathDevelopmentSet': 'datasets/FinNum_dev_rebuilded.json',
     'filepathTestSet': 'datasets/FinNum_test_all_with_GS.json',
-    'testing': True
+    'testing': False
 }
 

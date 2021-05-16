@@ -73,8 +73,8 @@ def main():
     # model = multi_target_forest.fit(vecs, vec_labels)
 
     # Code found at https://github.com/scikit-learn-contrib/imbalanced-learn/issues/337
-    rfClassifier = RandomForestClassifier()
-    svmClassifier = SVC()
+    rfClassifier = RandomForestClassifier(n_estimators=1000)
+    svmClassifier = SVC(decision_function_shape='ovr')
     # burde nok ha med class_label: weight se fremgangsmåte på https://towardsdatascience.com/why-weight-the-importance-of-training-on-balanced-datasets-f1e54688e7df
     # her kan du evt. prøve SMOTE istedenfor standardscaler fordi det er et ujevnt dataset, men lurer på om smote gjør det samme som reduserte accuracyen i eksempelrapport
     #sampler = SMOTE(random_state=2)
