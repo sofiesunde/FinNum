@@ -46,7 +46,7 @@ pip install matplotlib
 
 ## Results
 
-The Random Forest Classifier performs better than the Support Vector Machine Classifiers, however their performances are pretty low and some future adjustments will have to be made. 
+The Random Forest Classifier performs better than the Support Vector Machine Classifier, however their performances are pretty low and some future adjustments will have to be made. 
 
 ## Roadmap
 
