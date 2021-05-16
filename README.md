@@ -42,7 +42,7 @@ pip install matplotlib
 
 ![FinNumArchitecture](https://user-images.githubusercontent.com/74187128/118411071-24df6500-b693-11eb-8bfe-16cd76b999b1.png)
 
-```python preprocessing/``` contains code for reading and preprocsessing the data from the datasets. The models are written in ```python main.py``` where the whole system is managed. ```python main.py``` is not used as of now, but provides a great structure to further expand the system. 
+```preprocessing/``` contains code for reading and preprocsessing the data from the datasets. The models are written in ```main.py``` where the whole system is managed. ```models.py``` is not used as of now, but provides a great structure to further expand the system. 
 
 ## Results
 
